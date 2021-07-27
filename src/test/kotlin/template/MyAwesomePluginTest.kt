@@ -24,7 +24,7 @@ class MyAwesomePluginTest : BaseAbstractTest() {
                * line 2
                * line 3
                *
-               * ```kotlin:ank:playground
+               * ```kotlin:ank
                * val x: Int = 1
                * ```
                */
