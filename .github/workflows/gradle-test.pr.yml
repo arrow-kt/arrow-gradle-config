@@ -14,7 +14,7 @@ jobs:
         with:
           java-version: 11
       - name: "Test"
-      - run: ./gradlew clean test --stacktrace
+        run: ./gradlew clean test --stacktrace
       - name: "Prepare test reports"
         if: ${{ always() }}
         run: |
