@@ -13,4 +13,19 @@ jobs:
       - uses: actions/setup-java@v1
         with:
           java-version: 11
+      - name: "Test"
       - run: ./gradlew clean test --stacktrace
+      - name: "Prepare test reports"
+        if: ${{ always() }}
+        run: |
+          mkdir test-reports
+          for report in `ls -d build/reports/tests`; do
+            module=$(echo $report | cut -d/ -f3)
+            cp -r $report test-reports/$module
+          done
+      - name: "Make test reports available to download"
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v1
+        with:
+          name: test-reports
+          path: test-reports
