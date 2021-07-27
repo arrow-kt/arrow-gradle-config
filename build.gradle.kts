@@ -22,11 +22,14 @@ dependencies {
     implementation(kotlin("stdlib"))
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
+//    {
+//        exclude("org.jetbrains.kotlin", "kotlin-compiler")
+//    }
 
-    implementation("org.jetbrains.kotlin:kotlin-compiler:1.5.20")
-    implementation("org.jetbrains.kotlin:kotlin-script-util:1.5.20")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.5.20")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.20")
+    implementation("org.jetbrains.kotlin:kotlin-compiler:1.5.21")
+    implementation("org.jetbrains.kotlin:kotlin-script-util:1.5.21")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.5.21")
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.21")
 
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")

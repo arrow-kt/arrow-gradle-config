@@ -56,7 +56,7 @@ class Checker() : PreMergeDocumentableTransformer {
                 }
             }
 
-//            compileCode(allSnippets, emptyList())
+            compileCode(allSnippets, emptyList())
 
             println(allSnippets)
         }
@@ -139,7 +139,9 @@ public fun compileCode(
                     underlying = IllegalStateException("No engine configured for `${snip.lang}`"),
                     msg = colored(ANSI_RED, "ΛNK compilation failed [ snippets.first ]")
                 )
-            }.eval(snip.code)
+            }
+                .also { println("Going to eval ${snip.code}") }
+                .eval(snip.code)
         } catch (e: Exception) {
             // raise error and print to console
             if (snip.isFail) {

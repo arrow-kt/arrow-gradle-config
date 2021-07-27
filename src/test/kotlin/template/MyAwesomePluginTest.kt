@@ -25,15 +25,15 @@ class MyAwesomePluginTest : BaseAbstractTest() {
                * line 3
                *
                * ```kotlin:ank:playground
-               * code-fence
-               *
-               * line 4
+               * val x: Int = 1
                * ```
                */
             |data class TestingIsEasy(val reason: String)
             """.trimIndent(), configuration
         ) {
             documentablesTransformationStage = { module ->
+
+
                 val testedPackage = module.packages.find { it.name == "sample" }
                 val testedClass = testedPackage?.classlikes?.find { it.name == "TestingIsEasy" }
 
