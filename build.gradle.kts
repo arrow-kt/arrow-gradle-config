@@ -19,12 +19,9 @@ repositories {
 val dokkaVersion: String = "1.5.0"
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    implementation(kotlin("stdlib-jdk8"))
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
-//    {
-//        exclude("org.jetbrains.kotlin", "kotlin-compiler")
-//    }
 
     implementation("org.jetbrains.kotlin:kotlin-compiler:1.5.21")
     implementation("org.jetbrains.kotlin:kotlin-script-util:1.5.21")

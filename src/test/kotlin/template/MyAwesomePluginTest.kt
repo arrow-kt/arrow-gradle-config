@@ -19,7 +19,7 @@ class MyAwesomePluginTest : BaseAbstractTest() {
             """
             |/src/main/kotlin/sample/Test.kt
             |package sample
-            |/** 
+            |/**
                * has KDoc
                * line 2
                * line 3
