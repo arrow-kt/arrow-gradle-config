@@ -1,10 +1,10 @@
 package template
 
 import junit.framework.Assert.assertNotNull
-import org.jetbrains.dokka.testApi.testRunner.AbstractCoreTest
+import org.jetbrains.dokka.base.testApi.testRunner.BaseAbstractTest
 import org.junit.Test
 
-class MyAwesomePluginTest : AbstractCoreTest() {
+class MyAwesomePluginTest : BaseAbstractTest() {
     private val configuration = dokkaConfiguration {
         sourceSets {
             sourceSet {
@@ -19,6 +19,17 @@ class MyAwesomePluginTest : AbstractCoreTest() {
             """
             |/src/main/kotlin/sample/Test.kt
             |package sample
+            |/** 
+               * has KDoc
+               * line 2
+               * line 3
+               *
+               * ```kotlin:ank:playground
+               * code-fence
+               *
+               * line 4
+               * ```
+               */
             |data class TestingIsEasy(val reason: String)
             """.trimIndent(), configuration
         ) {
