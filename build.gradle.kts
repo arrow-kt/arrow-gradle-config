@@ -19,15 +19,12 @@ repositories {
 val dokkaVersion: String = "1.5.0"
 
 dependencies {
+//    implementation(project("engine"))
     implementation(kotlin("stdlib-jdk8"))
+    runtimeOnly(kotlin("scripting-jsr223"))
+
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
-
-    implementation("org.jetbrains.kotlin:kotlin-compiler:1.5.21")
-    implementation("org.jetbrains.kotlin:kotlin-script-util:1.5.21")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-reflect:1.5.21")
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.21")
-
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
     testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")

@@ -1,4 +1,4 @@
-package template
+package com.github.nomisrev.engine
 
 // TODO Update this to use Dokka's error reporting system
 public data class CompilationException(

@@ -1,5 +1,8 @@
 package template
 
+//import com.github.nomisrev.engine.Engine
+import com.github.nomisrev.engine.Snippet
+import com.github.nomisrev.engine.fenceRegexStart
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.model.DModule
 import org.jetbrains.dokka.model.doc.Br
@@ -20,7 +23,7 @@ object AnkCompiler : PreMergeDocumentableTransformer {
     // Could we optimise with `suspend` and running in parallel?
     override fun invoke(modules: List<DModule>): List<DModule> =
         modules.also {
-            Engine.compileCode(modules.allSnippets(), emptyList())
+//            Engine.compileCode(modules.allSnippets(), emptyList())
         }
 }
 

@@ -1,4 +1,4 @@
-package template
+package com.github.nomisrev.engine
 
 public val fenceRegexStart = "(.*):ank.*".toRegex()
 
