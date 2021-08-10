@@ -6,42 +6,64 @@ import java.net.URL
 import java.net.URLClassLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
-import javax.script.Bindings
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 
+/**
+ * Engine which can compile & evaluate code.
+ * This [Engine] is optimised to split the
+ */
 object Engine {
 
+    init { // This is optional and experimental, but may save some memory.
+        System.setProperty("kotlin.jsr223.experimental.resolve.dependencies.from.context.classloader", "true")
+    }
+
+    // Maintains a cache with the classpath as KEY, and a set of ScriptEngines for that classpath (Java & Kotlin).
     private val engineCache: ConcurrentMap<List<String>, Map<String, ScriptEngine>> = ConcurrentHashMap()
 
-    val classLoader = URLClassLoader(emptyList<String>().map { URL(it) }.toTypedArray())
-    val seManager = ScriptEngineManager(classLoader)
-    val engine = requireNotNull(seManager.getEngineByExtension("kts")) { "getEngineByExtension" }
+    // Mappings between fence lang, and extension names
+    private val extensionMappings: Map<String, String> = mapOf("java" to "java", "kotlin" to "kts")
 
-    private val extensionMappings: Map<String, String> = mapOf(
-        "java" to "java",
-        "kotlin" to "kts"
-    )
-
-//    val factory = MyScriptEngineFactory()
-
+    /**
+     * Compiles a [List] of [Snippet]s for a given `classpath`.
+     * The classpath should be formatted as `file://...` with the URI to the local jars.
+     *
+     * From Dokka we can simply use the `List<File>` classpath reference of a given Module,
+     * otherwise you can programmatically access the ClassPath or load/pass it during build time.
+     * Gradle knows the classpath, and can pass it as an argument to the program.
+     */
     public fun compileCode(snippets: List<Snippet>, compilerArgs: List<String>): List<Snippet> {
-//        val engine = getEngineCache(snippets, compilerArgs)
+        val classLoader = classLoader(compilerArgs)
+
+        // We need to get the original contextClassLoader which Dokka uses to run, and store it
+        // Then we need to set the contextClassloader so the engine can correctly define the compilation classpath
+        // We do this **whilst** decoupling the classLoader for the ScriptEngine with the classLoader of Dokka.
+        // This is because Dokka shadows some of the Kotlin compiler dependencies, having them mixed results in incorrect state
+        val originalClassLoader = Thread.currentThread().contextClassLoader
+        Thread.currentThread().contextClassLoader = classLoader
+
+        val engineCache = getEngineCache(snippets, classLoader, compilerArgs)
+
         // run each snipped and handle its result
         return snippets.mapIndexed { i, snip ->
             val result = try {
-//                engine.getOrElse(snip.lang) {
-//                    throw CompilationException(
+                val engine = engineCache.getOrElse(snip.lang) {
+                    throw CompilationException(
 //                      path = snippets.first,
-//                        snippet = snip,
-//                        underlying = IllegalStateException("No engine configured for `${snip.lang}`"),
-//                        msg = colored(ANSI_RED, "ΛNK compilation failed [ snippets.first ]")
-//                    )
-//                }
-                engine
-                    .also { println("Going to eval ${snip.code}") }
-                    .eval(snip.code)
+                        snippet = snip,
+                        underlying = IllegalStateException("No engine configured for `${snip.lang}`"),
+                        msg = colored(ANSI_RED, "ΛNK compilation failed [ snippets.first ]")
+                    )
+                }
+
+                println("Going to eval ${snip.code}")
+
+                engine.eval(snip.code)
+
+                // When we're done, we reset back to the original classLoader
+                Thread.currentThread().contextClassLoader = originalClassLoader
             } catch (e: Exception) {
                 // raise error and print to console
                 if (snip.isFail) {
@@ -66,7 +88,7 @@ object Engine {
 
             // handle results, ignore silent snippets
             if (snip.isSilent) snip
-            else snip.copy(result = result?.let {
+            else snip.copy(result = result.let {
                 when {
                     // replace entire snippet with result
                     snip.isReplace -> it.toString()
@@ -77,10 +99,14 @@ object Engine {
         }
     }
 
-    private fun getEngineCache(snippets: List<Snippet>, compilerArgs: List<String>): Map<String, ScriptEngine> {
+    // Gets the engine cache for a given classpath
+    private fun getEngineCache(
+        snippets: List<Snippet>,
+        classLoader: URLClassLoader?,
+        compilerArgs: List<String>
+    ): Map<String, ScriptEngine> {
         val cache = engineCache[compilerArgs]
         return if (cache == null) { // create a new engine
-            val classLoader = URLClassLoader(compilerArgs.map { URL(it) }.toTypedArray())
             val seManager = ScriptEngineManager(classLoader)
             val langs = snippets.map(Snippet::lang).distinct()
             val engines = langs.toList().associateWith {
@@ -94,20 +120,25 @@ object Engine {
             cache
         }
     }
-}
 
-//class MyScriptEngineFactory : KotlinJsr223JvmScriptEngineFactoryBase() {
-//    override fun getScriptEngine(): ScriptEngine =
-//        KotlinJsr223JvmLocalScriptEngine(
-//            factory = this,
-//            templateClasspath = emptyList(),
-//            templateClassName = KotlinStandardJsr223ScriptTemplate::class.qualifiedName!!,
-//            getScriptArgs = { ctx, types ->
-//                ScriptArgsWithTypes(
-//                    arrayOf(ctx.getBindings(ScriptContext.ENGINE_SCOPE)),
-//                    types ?: emptyArray()
-//                )
-//            },
-//            arrayOf(Bindings::class)
-//        )
-//}
+    /*
+     * Creates a **new** [URLClassLoader] **without** a parent.
+     * This [URLClassLoader] has references to all the dependencies it needs to run [ScriptEngine],
+     * and it holds all the user desired dependencies so we can evaluate code with user dependencies.
+     */
+    private fun classLoader(compilerArgs: List<String>): URLClassLoader? =
+        Engine::class.java.classLoader
+            .let { it as? URLClassLoader }
+            ?.let {
+                URLClassLoader(
+                    it.urLs.filter {
+                        it.file.contains("/kotlin-script") ||
+                                it.file.contains("/kotlin-stdlib") ||
+                                it.file.contains("/kotlin-reflect") ||
+                                it.file.contains("/kotlinx-coroutines") ||
+                                it.file.contains("/kotlin-analysis-compiler")
+                    }.toTypedArray() + compilerArgs.map(::URL).toTypedArray(),
+                    null // Decouple from parent ClassLoader
+                )
+            }
+}

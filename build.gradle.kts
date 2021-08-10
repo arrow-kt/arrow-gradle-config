@@ -18,22 +18,10 @@ repositories {
 
 val dokkaVersion: String = "1.5.0"
 
-//println(sourceSets.main.runtimeClasspath)
-
 dependencies {
-//    implementation(project("engine"))
+    implementation(project("engine"))
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
-//    implementation(kotlin("stdlib-jdk8"))
-    runtimeOnly(kotlin("reflect"))
-    runtimeOnly(kotlin("script-runtime"))
-    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-common:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:1.5.0") { isTransitive = false }
 
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")

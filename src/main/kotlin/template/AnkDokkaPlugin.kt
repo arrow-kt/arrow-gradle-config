@@ -1,10 +1,8 @@
 package template
 
-//import com.github.nomisrev.engine.Engine
-//import com.github.nomisrev.engine.Snippet
-//import com.github.nomisrev.engine.fenceRegexStart
-import java.net.URLClassLoader
-import javax.script.ScriptEngineManager
+import com.github.nomisrev.engine.Engine
+import com.github.nomisrev.engine.Snippet
+import com.github.nomisrev.engine.fenceRegexStart
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.model.DModule
 import org.jetbrains.dokka.model.doc.Br
@@ -19,55 +17,27 @@ class AnkDokkaPlugin : DokkaPlugin() {
     val ank by extending {
         dokkaBasePlugin.preMergeDocumentableTransformer providing ::AnkCompiler
     }
-
-    init { // This is optional and experimental, but may save some memory.
-        System.setProperty("kotlin.jsr223.experimental.resolve.dependencies.from.context.classloader", "true")
-    }
 }
 
+/**
+ * => Every module can have its own classpath (ONLY WORKS FOR JVM due to ScriptEngine)
+ * => Every KDoc belongs to a File which has a path, can we figure this out?
+ * => This doesn't replace KotlinX Knit, so don't support MARKDOWN for now.
+ * => Properly log errors through DokkaLogger
+ */
 class AnkCompiler(val ctx: DokkaContext) : PreMergeDocumentableTransformer {
 
     // Could we optimise with `suspend` and running in parallel?
     override fun invoke(modules: List<DModule>): List<DModule> =
         modules.also {
-            val classLoader = classLoader()
+            ctx.logger.error("SourceSets: ${modules.flatMap { it.sourceSets }}")
+            ctx.logger.error("First classPath: ${modules.flatMap { it.sourceSets.firstOrNull()?.classpath.orEmpty() }}")
 
-            // We need to get the original contextClassLoader which Dokka uses to run, and store it
-            // Then we need to set the contextClassloader so the engine can correctly define the compilation classpath
-            // We do this **whilst** decoupling the classLoader for the ScriptEngine with the classLoader of Dokka.
-            // This is because Dokka shadows some of the Kotlin compiler dependencies, having them mixed results in incorrect state
-            val originalClassLoader = Thread.currentThread().contextClassLoader
-            Thread.currentThread().contextClassLoader = classLoader
-
-            ScriptEngineManager(classLoader)
-                .getEngineByExtension("kts")
-                .eval("println(\"HELLO\")")
-
-            // When we're done, we reset back to the original classLoader
-            Thread.currentThread().contextClassLoader = originalClassLoader
+            Engine.compileCode(it.allSnippets(), emptyList())
         }
 }
 
-/**
- * Creates a **new** [URLClassLoader] **without** a parent.
- * This [URLClassLoader] has references to all the depedencies it needs to run [ScriptEngine],
- * and it holds all the user desired dependencies so we can evaluate code with user dependencies.
- */
-fun classLoader(): URLClassLoader? =
-    Reference::class.java.classLoader
-        .let { it as? URLClassLoader }
-        ?.let {
-            URLClassLoader(
-                it.urLs.filter {
-                    it.file.contains("/kotlin-script") ||
-                            it.file.contains("/kotlin-stdlib") ||
-                            it.file.contains("/kotlin-reflect") ||
-                            it.file.contains("/kotlinx-coroutines") ||
-                            it.file.contains("/kotlin-analysis-compiler")
-                }.toTypedArray(),
-                null
-            )
-        }
+
 
 private fun CodeBlock.asStringOrNull(): String? =
     buildString {
@@ -103,25 +73,3 @@ private fun List<DModule>.allSnippets(): List<Snippet> =
             }
         }
     }
-
-public val fenceRegexStart = "(.*):ank.*".toRegex()
-
-public const val AnkBlock: String = ":ank"
-public const val AnkSilentBlock: String = ":ank:silent"
-public const val AnkReplaceBlock: String = ":ank:replace"
-public const val AnkOutFileBlock: String = ":ank:outFile"
-public const val AnkPlayground: String = ":ank:playground"
-public const val AnkFailBlock: String = ":ank:fail"
-public const val AnkPlaygroundExtension: String = ":ank:playground:extension"
-
-public data class Snippet(
-    val fence: String,
-    val lang: String,
-    val code: String,
-    val result: String?
-) {
-    val isSilent: Boolean = fence.contains(AnkSilentBlock)
-    val isReplace: Boolean = fence.contains(AnkReplaceBlock)
-    val isFail: Boolean = fence.contains(AnkFailBlock)
-    val isPlayground: Boolean = fence.contains(AnkPlayground)
-}
