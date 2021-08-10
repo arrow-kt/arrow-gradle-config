@@ -1,18 +1,20 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
+import java.io.ByteArrayOutputStream
 
 plugins {
     kotlin("jvm") version "1.5.0"
     id("org.jetbrains.dokka") version "1.5.0"
     `maven-publish`
     signing
+    base
 }
 
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
 configurations {
-    childProjects
+    this.create("toCopy")
 }
 
 //jar {
@@ -44,6 +46,12 @@ dependencies {
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
     testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")
+
+    "toCopy"("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.21")
+}
+
+tasks.register<Copy>("download") {
+    from(configurations.getAt("toCopy")).into("lib")
 }
 
 val dokkaOutputDir = "$buildDir/dokka"
