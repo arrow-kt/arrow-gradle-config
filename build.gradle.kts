@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
 plugins {
-    kotlin("jvm") version "1.4.10"
-    id("org.jetbrains.dokka") version "1.4.10.2" // Used to create a javadoc jar
+    kotlin("jvm") version "1.5.0"
+    id("org.jetbrains.dokka") version "1.5.0"
     `maven-publish`
     signing
 }
@@ -11,19 +11,39 @@ plugins {
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
+configurations {
+    childProjects
+}
+
+//jar {
+//    dependsOn configurations.childJars
+//            from { configurations.childJars.collect { zipTree(it) } }
+//}
+
 repositories {
     mavenCentral()
     jcenter()
 }
 
-val dokkaVersion: String by project
+val dokkaVersion: String = "1.5.0"
+
 dependencies {
-    implementation(kotlin("stdlib"))
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
 
+    runtimeOnly(kotlin("reflect"))
+    runtimeOnly(kotlin("script-runtime"))
+    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-common:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:1.5.0") { isTransitive = false }
+
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
+    testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")
 }
 
 val dokkaOutputDir = "$buildDir/dokka"
@@ -41,6 +61,7 @@ val javadocJar by tasks.registering(Jar::class) {
     dependsOn(tasks.dokkaHtml)
     archiveClassifier.set("javadoc")
     from(dokkaOutputDir)
+    dependsOn
 }
 
 java {

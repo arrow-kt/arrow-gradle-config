@@ -1,123 +1,142 @@
-# Dokka plugin template
+# Λnk Dokka Plugin
 
-This repository provides a template for creating [Dokka](https://github.com/Kotlin/dokka) plugins 
-(check the [Creating a repository from a template](https://help.github.com/en/enterprise/2.20/user/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) article).
+_Compile time docs verification and evaluation for Kotlin._
 
-> **TL;DR:** Click the <kbd>Use this template</kbd> button and clone it in IntelliJ IDEA.
+_Λnk_ short for [Ankhesenpaaten](https://en.wikipedia.org/wiki/Ankhesenamun) wife and sister of [Tutankhamun](https://en.wikipedia.org/wiki/Tutankhamun), is a [Gradle](https://gradle.org/) plugin to verify code snippets in library docs for the Kotlin and Java programming languages.
 
-### Getting started
+Λnk is inspired by the awesome docs and tutorial generator for Scala [`tut`](http://tpolecat.github.io/tut/).
 
-Before writing a plugin it might be beneficial to spend 5 minutes reading our [developer guide](https://kotlin.github.io/dokka/1.4.10.2/developer_guide/introduction/) to have a basic idea about the data model and system architecture.
-If some you miss some information or something is unclear please let us know on [community slack](https://kotlinlang.slack.com/archives/C0F4UNJET) or via [github issue](https://github.com/Kotlin/dokka/issues).
+Λnk is a very simple documentation tool for Kotlin and Java written using [Λrrow](https://github.com/arrow-kt/arrow) that reads Markdown files and interprets and evaluates Kotlin and Java code in `ank` sheds, allowing you to write documentation that is typechecked and run as part of your build.
+In a nutshell, Λnk works evaluating, then capturing results and including them after the expressions so they can be read in the documentation. The point of Λnk is to provide code that the user can type in and expect to work.
 
-### Structure
-A minimal repository for a Dokka plugin should contain files in the following structure:
-```
-.
-├── LICENSE
-├── README.md
-├── build.gradle.kts
-├── gradle
-│   └── wrapper
-│       ├── gradle-wrapper.jar
-│       └── gradle-wrapper.properties
-├── gradle.properties
-├── gradlew
-├── gradlew.bat
-├── settings.gradle.kts
-└── src
-    └── main
-        ├── kotlin
-        │   └── template
-        │       └── MyAwesomeDokkaPlugin.kt
-        └── resources
-            └── META-INF
-                └── services
-                    └── org.jetbrains.dokka.plugability.DokkaPlugin
+## Basic setup
+
+TODO()
+
+## Run Λnk
 
 ```
+./gradlew :module-name:dokkaHtml
+```
 
-### Applying the plugin
+This will process all Kotlin & Java snippets inside KDoc, while providing all runtime dependencies (`sourceSets.main.runtimeClasspath`) in the `classpath`.
 
-In order to apply a plugin it needs to be published to a repository.
-For development use we recommend the mavenLocal.
-This repository contains a basic setup for publishing artefacts to that repository.
-In order to do it use `publishToMavenLocal` task. 
+## Errors output
 
-After that you will need a sample project to test on.
-Kotlin has a lot of sample projects to choose from eg: [dokka-gradle-example](https://github.com/Kotlin/kotlin-examples/tree/master/gradle/dokka/dokka-gradle-example)
+When something goes wrong Λnk shows what snippet has failed and where, including the compiler errors.
 
-In order to apply the plugin you need to add it to project dependencies:
+For example, if some `import`s are missing:
+
+````
+```kotlin:ank
+val someValue: Option<String> = Some("I am wrapped in something")
+someValue
+```
+````
+
+Λnk will report the following:
+
+````
+> Task :arrow-docs:runAnk
+      :::     ::::    ::: :::    :::
+    :+: :+:   :+:+:   :+: :+:   :+:
+   +:+   +:+  :+:+:+  +:+ +:+  +:+
+  +#+     ++: +#+ +:+ +#+ +#++:++
+  +#+     +#+ +#+  +#+#+# +#+  +#+
+  #+#     #+# #+#   #+#+# #+#   #+#
+  ###     ### ###    #### ###    ###
+[33%] ✗ option/README.md [1 of 3] 0s]
+Exception in thread "main"
+
+```
+val someValue: Option<String> = Some("I am wrapped in something")
+someValue
+```
+error: unresolved reference: Option
+val someValue: Option<String> = Some("I am wrapped in something")
+               ^
+error: unresolved reference: Some
+val someValue: Option<String> = Some("I am wrapped in something")
+                                ^
+
+
+> Task :arrow-docs:runAnk FAILED
+
+FAILURE: Build failed with an exception.
+````
+
+## Modifiers
+
+By default Λnk compiles and evaluates the snippets of code included in `<language>:ank` sheds. However sometimes you might want a definition without printing the result out, or might want to replace an entire snippet with the output of the resulting evaluation. For these occasions Λnk provides a number of modifiers that you can add to the shed declaration i.e. `<language>:ank:*`.
+The language used (Kotlin or Java) should be prepended to `:ank` e.g. `kotlin:ank:replace`. The following modifiers are supported.
+
+| Modifier | Explanation |
+|---|---|
+| `:silent` | Suppresses output; under this modifier the input and output text are identical. |
+| `:replace` | Replaces an entire snippet with the output of the resulting evaluation. |
+| `:fail` | The error raised from the code snippet will be appended at the end. |
+
+### `<language>:ank`
+
+Kotlin example:
+
+````
+```kotlin:ank
+import arrow.*
+import arrow.core.*
+
+val someValue: Option<String> = Some("I am wrapped in something")
+someValue
+```
+````
+
+Output:
+
+````
 ```kotlin
-dependencies {
-    dokkaPlugin("template:template-dokka-plugin:0.1")
-}
+import arrow.*
+import arrow.core.*
+
+val someValue: Option<String> = Some("I am wrapped in something")
+someValue
+// Some(I am wrapped in something)
 ```
+````
 
-Please keep in mind, that you need to have a `mavenLocal()` repository in your project.
+### `:silent`
 
-After that you can run Dokka on this project and see the results. 
-You should use a Dokka command you desire to write a plugin for (eg. `dokkaHtml`, `dokkaGfm` or other) with `--info` logging level.
-In project logs you should see the name of a plugin:
+Example:
+
+````
+```kotlin:ank:silent
+fun maybeItWillReturnSomething(flag: Boolean): Option<String> =
+   if (flag) Some("Found value") else None
+val itWillReturn = maybeItWillReturnSomething(true)
+itWillReturn
 ```
-...
-Initializing plugins
-Loaded plugins: [org.jetbrains.dokka.base.DokkaBase, template.MyAwesomeDokkaPlugin]
-Loaded: [
-...
+````
+
+Output:
+
+````
+```kotlin
+fun maybeItWillReturnSomething(flag: Boolean): Option<String> =
+   if (flag) Some("Found value") else None
+val itWillReturn = maybeItWillReturnSomething(true)
+itWillReturn
 ```
+````
 
-### Testing
+### `:replace`
 
-This project includes a test dependency on `dokka-test-api` that allows for easy testing. 
-We highly encourage for you to extend tests classes with `AbstractCoreTest()` which allows you to write kotlin or java code
-in your tests without a need to provide external files.
-This way the tests are much cleaner and easier to reason about.
+Example:
 
-This repository contains most basic example of a [test using this mechanism](src/test/kotlin/template/MyAwesomePluginTest.kt).
+````
+```kotlin:ank:replace
+fun hello(name: String) = "Hello $name!"
 
-### Debugging
+hello("Λrrow")
+```
+````
 
-Sometimes things don't work as we expected :) 
-
-From our experience using debugger is the most efficient.
-Apart from debugging tests you are able to debug whole projects while Dokka is running.
-Enable the debugger in the project you wish to generate documentation for using `org.gradle.debug = true` and,
-in intellij with your plugin, run the remote configuration.
-
-For more information please visit [official intellij guide](https://www.jetbrains.com/help/idea/tutorial-remote-debug.html#67dc8)
-
-### Publishing
-
-#### Publishing locally
-
-In order to test your plugin locally, please use the `publishToMavenLocal` task, as explained in the [Applying the plugin](#applying-the-plugin) section.
-
-#### Publishing to Maven Central
-
-Publishing extension has been preconfigured for deployment to Maven Central repository via OSSRH.
-A jar file with documentation (`javadoc.jar`) is created with Dokka.
-In order to sigh the publication, you have to provide one of the following sets of environmental variables:
-
-1) * SIGN_KEY_ID - The public key ID (The last 8 symbols of the keyId)
-   * SIGN_KEY - The secret (private) key
-   * SIGN_KEY_PASSPHRASE - The passphrase used to protect your private key
-   
-2) * SIGN_KEY - The secret (private) key
-   * SIGN_KEY_PASSPHRASE - The passphrase used to protect your private key
-  
-For more information about signing the publication, please refer to the [Signing Plugin readme](https://docs.gradle.org/current/userguide/signing_plugin.html).
-
-OSSRH credentials also have to be provided via
- 
-* SONATYPE_USER 
-* SONATYPE_PASSWORD
-    
-environmental variables. 
-
-Please follow the [OSSRH guide](https://central.sonatype.org/pages/ossrh-guide.html) for the detailed steps on how to get the credentials and claim the group name.
-
-Finally, the publication can be started with `./gradlew publish` command
-
-### Final words
-After creating a plugin please consider sharing it with the community on [official Dokka plugins list](https://kotlin.github.io/dokka/1.4.10.2/community/plugins-list/)
+That snippet will be replaced by "Hello Arrow!" after running `runAnk`.
