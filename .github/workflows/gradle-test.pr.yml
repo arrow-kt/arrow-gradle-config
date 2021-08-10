@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 8
       - name: "Test"
         run: ./gradlew clean test --stacktrace
       - name: "Prepare test reports"
