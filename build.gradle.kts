@@ -8,17 +8,8 @@ plugins {
     signing
 }
 
-group = "org.example"
+group = "com.nomisrev"
 version = "1.0-SNAPSHOT"
-
-configurations {
-    childProjects
-}
-
-//jar {
-//    dependsOn configurations.childJars
-//            from { configurations.childJars.collect { zipTree(it) } }
-//}
 
 repositories {
     mavenCentral()

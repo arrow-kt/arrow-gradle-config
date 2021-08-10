@@ -51,3 +51,17 @@ fun exampleReplace(): Unit = Unit
  * ```
  */
 fun exampleDependency(): Unit = Unit
+
+/**
+ * This function drops first letter of [str],
+ * and here is an example + test.
+ *
+ * ```kotlin:ank
+ * import io.kotest.matchers.shouldBe
+ *
+ * exampleTestAsDoc("ttest") shouldBe "test"
+ * exampleTestAsDoc("") shouldBe ""
+ * ```
+ */
+fun exampleTestAsDoc(str: String): String =
+    str.drop(1)
