@@ -61,9 +61,6 @@ object Engine {
                 println("Going to eval ${snip.code}")
 
                 engine.eval(snip.code)
-
-                // When we're done, we reset back to the original classLoader
-                Thread.currentThread().contextClassLoader = originalClassLoader
             } catch (e: Exception) {
                 // raise error and print to console
                 if (snip.isFail) {
@@ -84,6 +81,9 @@ object Engine {
                     """.trimMargin()
                     )
                 }
+            } finally {
+                // When we're done, we reset back to the original classLoader
+                Thread.currentThread().contextClassLoader = originalClassLoader
             }
 
             // handle results, ignore silent snippets
