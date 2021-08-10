@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
 
 plugins {
-    kotlin("jvm") version "1.5.21"
+    kotlin("jvm") version "1.5.0"
     id("org.jetbrains.dokka") version "1.5.0"
     `maven-publish`
     signing
@@ -18,13 +18,24 @@ repositories {
 
 val dokkaVersion: String = "1.5.0"
 
+//println(sourceSets.main.runtimeClasspath)
+
 dependencies {
 //    implementation(project("engine"))
-    implementation(kotlin("stdlib-jdk8"))
-    runtimeOnly(kotlin("scripting-jsr223"))
-
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
+//    implementation(kotlin("stdlib-jdk8"))
+    runtimeOnly(kotlin("reflect"))
+    runtimeOnly(kotlin("script-runtime"))
+    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-common:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:1.5.0") { isTransitive = false }
+
+
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
     testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")

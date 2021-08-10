@@ -11,5 +11,5 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    runtimeOnly(kotlin("scripting-jsr223"))
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.21") { isTransitive = false }
 }
