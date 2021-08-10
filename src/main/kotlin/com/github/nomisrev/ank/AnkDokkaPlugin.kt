@@ -27,16 +27,17 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
     // Could we optimise with `suspend` and running in parallel?
     override fun invoke(modules: List<DModule>): List<DModule> =
         modules.also {
-            ctx.logger.error(colored(ANSI_PURPLE, "Λnk Dokka Plugin is running"))
+            ctx.logger.info(colored(ANSI_PURPLE, "Λnk Dokka Plugin is running"))
 
-            val classpath = modules.flatMap { it.sourceSets.firstOrNull()?.classpath.orEmpty() }
-                .map { it.toURI().toURL().toString() }
-
-            Engine.compileCode(it.allSnippets(), classpath)
+            // TODO compile per module, not all modules with one huge classpath
+            val userClasspath = modules.flatMap { it.userClasspath() }
+            Engine.compileCode(it.allSnippets(), userClasspath)
         }
 }
 
-
+fun DModule.userClasspath(): List<String> =
+    sourceSets.firstOrNull()?.classpath.orEmpty()
+        .map { it.toURI().toURL().toString() }
 
 private fun CodeBlock.asStringOrNull(): String? =
     buildString {

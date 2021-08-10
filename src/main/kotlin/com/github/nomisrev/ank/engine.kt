@@ -9,15 +9,23 @@ import java.util.concurrent.ConcurrentMap
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
+import org.jetbrains.dokka.utilities.ServiceLocator.toFile
 
 /**
  * Engine which can compile & evaluate code.
  * This [Engine] is optimised to split the
  */
 object Engine {
+    private val jss233Classpath: List<URL>
 
     init { // This is optional and experimental, but may save some memory.
         System.setProperty("kotlin.jsr223.experimental.resolve.dependencies.from.context.classloader", "true")
+
+        val loader =  Engine.javaClass.classLoader
+        jss233Classpath = loader.getResource("jsr223/list")
+            ?.toFile()?.useLines { paths: Sequence<String> ->
+                paths.mapNotNull { loader.getResource("jsr223/$it") }.toList()
+            }.orEmpty()
     }
 
     // Maintains a cache with the classpath as KEY, and a set of ScriptEngines for that classpath (Java & Kotlin).
@@ -128,13 +136,7 @@ object Engine {
             .let { it as? URLClassLoader }
             ?.let {
                 URLClassLoader(
-                    it.urLs.filter {
-                        it.file.contains("/kotlin-script") ||
-                                it.file.contains("/kotlin-stdlib") ||
-                                it.file.contains("/kotlin-reflect") ||
-                                it.file.contains("/kotlinx-coroutines") ||
-                                it.file.contains("/kotlin-analysis-compiler")
-                    }.toTypedArray() + compilerArgs.map(::URL).toTypedArray(),
+                    (jss233Classpath + compilerArgs.map(::URL)).toTypedArray(),
                     null // Decouple from parent ClassLoader
                 )
             }

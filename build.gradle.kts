@@ -13,15 +13,6 @@ plugins {
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
-configurations {
-    this.create("toCopy")
-}
-
-//jar {
-//    dependsOn configurations.childJars
-//            from { configurations.childJars.collect { zipTree(it) } }
-//}
-
 repositories {
     mavenCentral()
     jcenter()
@@ -33,25 +24,27 @@ dependencies {
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
 
-    runtimeOnly(kotlin("reflect"))
-    runtimeOnly(kotlin("script-runtime"))
-    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-common:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:1.5.0") { isTransitive = false }
-
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
     testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")
+}
 
+configurations { create("toCopy") }
+
+dependencies {
     "toCopy"("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.21")
 }
 
-tasks.register<Copy>("download") {
-    from(configurations.getAt("toCopy")).into("lib")
+tasks.register("downloadJS233") {
+    doLast {
+        copy {
+            from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
+        }
+        exec {
+            workingDir = File("src/main/resources/jsr223")
+            executable = "../../../JarListScript.sh"
+        }
+    }
 }
 
 val dokkaOutputDir = "$buildDir/dokka"
