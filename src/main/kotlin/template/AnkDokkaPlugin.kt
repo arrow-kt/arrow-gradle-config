@@ -3,11 +3,8 @@ package template
 //import com.github.nomisrev.engine.Engine
 //import com.github.nomisrev.engine.Snippet
 //import com.github.nomisrev.engine.fenceRegexStart
-import java.io.File
-import java.net.URL
 import java.net.URLClassLoader
 import javax.script.ScriptEngineManager
-import kotlin.script.experimental.jvm.util.classPathFromTypicalResourceUrls
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.model.DModule
 import org.jetbrains.dokka.model.doc.Br
@@ -17,6 +14,45 @@ import org.jetbrains.dokka.plugability.DokkaContext
 import org.jetbrains.dokka.plugability.DokkaPlugin
 import org.jetbrains.dokka.transformers.documentation.PreMergeDocumentableTransformer
 
+class AnkDokkaPlugin : DokkaPlugin() {
+    val dokkaBasePlugin by lazy { plugin<DokkaBase>() }
+    val ank by extending {
+        dokkaBasePlugin.preMergeDocumentableTransformer providing ::AnkCompiler
+    }
+
+    init { // This is optional and experimental, but may save some memory.
+        System.setProperty("kotlin.jsr223.experimental.resolve.dependencies.from.context.classloader", "true")
+    }
+}
+
+class AnkCompiler(val ctx: DokkaContext) : PreMergeDocumentableTransformer {
+
+    // Could we optimise with `suspend` and running in parallel?
+    override fun invoke(modules: List<DModule>): List<DModule> =
+        modules.also {
+            val classLoader = classLoader()
+
+            // We need to get the original contextClassLoader which Dokka uses to run, and store it
+            // Then we need to set the contextClassloader so the engine can correctly define the compilation classpath
+            // We do this **whilst** decoupling the classLoader for the ScriptEngine with the classLoader of Dokka.
+            // This is because Dokka shadows some of the Kotlin compiler dependencies, having them mixed results in incorrect state
+            val originalClassLoader = Thread.currentThread().contextClassLoader
+            Thread.currentThread().contextClassLoader = classLoader
+
+            ScriptEngineManager(classLoader)
+                .getEngineByExtension("kts")
+                .eval("println(\"HELLO\")")
+
+            // When we're done, we reset back to the original classLoader
+            Thread.currentThread().contextClassLoader = originalClassLoader
+        }
+}
+
+/**
+ * Creates a **new** [URLClassLoader] **without** a parent.
+ * This [URLClassLoader] has references to all the depedencies it needs to run [ScriptEngine],
+ * and it holds all the user desired dependencies so we can evaluate code with user dependencies.
+ */
 fun classLoader(): URLClassLoader? =
     Reference::class.java.classLoader
         .let { it as? URLClassLoader }
@@ -32,86 +68,6 @@ fun classLoader(): URLClassLoader? =
                 null
             )
         }
-
-class AnkDokkaPlugin : DokkaPlugin() {
-    val dokkaBasePlugin by lazy { plugin<DokkaBase>() }
-    val ank by extending {
-        dokkaBasePlugin.preMergeDocumentableTransformer providing ::AnkCompiler
-    }
-
-    init {
-        System.setProperty("kotlin.jsr223.experimental.resolve.dependencies.from.context.classloader", "true")
-    }
-}
-
-class AnkCompiler(val ctx: DokkaContext) : PreMergeDocumentableTransformer {
-
-    // Could we optimise with `suspend` and running in parallel?
-    override fun invoke(modules: List<DModule>): List<DModule> =
-        modules.also {
-            val classLoader = classLoader().also { println("classLoader: $it") }
-
-            val saveClassLoader = Thread.currentThread().contextClassLoader
-            Thread.currentThread().contextClassLoader = classLoader
-            println("Old classloader: $saveClassLoader, Thread.currentThread().contextClassLoader = ${Thread.currentThread().contextClassLoader}")
-
-            val manager = ScriptEngineManager(classLoader)
-            val engine = manager.getEngineByExtension("kts")
-
-            engine.eval("println(\"HELLO\")")
-
-            Thread.currentThread().contextClassLoader = saveClassLoader
-
-//            val classpath = listOf(
-//                File("/Users/simonvergauwen/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib-jdk8/1.5.21/6b3de2a43405a65502728047db37a98a0c7e72f0/kotlin-stdlib-jdk8-1.5.21.jar").toURI()
-//                    .toString()
-//            ).map { URL(it) }.toTypedArray()
-//
-//            val classLoader = AnkCompiler::class.java.classLoader
-//                .let { it as? URLClassLoader }
-//                ?.let {
-//                    URLClassLoader(
-//                        it.urLs.filter {
-//                            it.file.contains("/kotlin-script") ||
-//                                    it.file.contains("/kotlin-stdlib") ||
-//                                    it.file.contains("/kotlin-reflect") ||
-//                                    it.file.contains("/kotlinx-coroutines") ||
-//                                    it.file.contains("/kotlin-analysis-compiler")
-//                        }.toTypedArray(),
-//                        null
-//                    )
-//                }
-//
-//            val classLoader2 = AnkCompiler::class.java.classLoader
-//                .classPathFromTypicalResourceUrls()
-//                .let { files ->
-//                    URLClassLoader(
-//                        files.filter {
-//                            it.absolutePath.contains("/kotlin-script") ||
-//                                    it.absolutePath.contains("/kotlin-stdlib") ||
-//                                    it.absolutePath.contains("/kotlin-reflect") ||
-//                                    it.absolutePath.contains("/kotlinx-coroutines") ||
-//                                    it.absolutePath.contains("/kotlin-analysis-compiler")
-//                        }.map { it.toURI().toURL() }
-//                            .toList()
-//                            .toTypedArray(),
-//                        null
-//                    )
-//                }
-//
-//            println("classLoader: $classLoader, classLoader2: $classLoader2")
-//            Thread.currentThread().contextClassLoader = classLoader
-//            val manager = ScriptEngineManager(classLoader2)
-//            val engine = manager.getEngineByExtension("kts")
-//            println("I got engine: $engine")
-//
-//            engine.eval("println(\"HELLO\")")
-
-//            println("I got factory: ${engine.factory}")
-//            engine.eval("println(\"HELLO\")")
-//            Engine.compileCode(modules.allSnippets(), emptyList())
-        }
-}
 
 private fun CodeBlock.asStringOrNull(): String? =
     buildString {
