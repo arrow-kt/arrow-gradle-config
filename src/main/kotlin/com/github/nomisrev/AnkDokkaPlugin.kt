@@ -1,7 +1,10 @@
-package template
+package com.github.nomisrev
 
+import com.github.nomisrev.engine.ANSI_GREEN
+import com.github.nomisrev.engine.AnkHeader
 import com.github.nomisrev.engine.Engine
 import com.github.nomisrev.engine.Snippet
+import com.github.nomisrev.engine.colored
 import com.github.nomisrev.engine.fenceRegexStart
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.model.DModule
@@ -25,15 +28,19 @@ class AnkDokkaPlugin : DokkaPlugin() {
  * => This doesn't replace KotlinX Knit, so don't support MARKDOWN for now.
  * => Properly log errors through DokkaLogger
  */
-class AnkCompiler(val ctx: DokkaContext) : PreMergeDocumentableTransformer {
+private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableTransformer {
 
     // Could we optimise with `suspend` and running in parallel?
     override fun invoke(modules: List<DModule>): List<DModule> =
         modules.also {
+            ctx.logger.error(colored(ANSI_GREEN, AnkHeader))
             ctx.logger.error("SourceSets: ${modules.flatMap { it.sourceSets }}")
             ctx.logger.error("First classPath: ${modules.flatMap { it.sourceSets.firstOrNull()?.classpath.orEmpty() }}")
 
-            Engine.compileCode(it.allSnippets(), emptyList())
+            val classpath = modules.flatMap { it.sourceSets.firstOrNull()?.classpath.orEmpty() }
+                .map { it.toURI().toURL().toString() }
+
+            Engine.compileCode(it.allSnippets(), classpath)
         }
 }
 
@@ -62,7 +69,12 @@ private fun List<DModule>.allSnippets(): List<Snippet> =
                                     fenceRegexStart.matchEntire(fence)?.let { match ->
                                         docTag.asStringOrNull()?.let { rawCode ->
                                             val lang = match.groupValues[1].trim()
-                                            Snippet(fence, lang, rawCode, null)
+                                            val path = """
+                                                Module: ${module.name}
+                                                package: ${`package`.packageName}
+                                                KDoc of: $documentable 
+                                            """.trimIndent()
+                                            Snippet(path, fence, lang, rawCode)
                                         }
                                     }
                                 }

@@ -11,6 +11,15 @@ plugins {
 group = "org.example"
 version = "1.0-SNAPSHOT"
 
+configurations {
+    childProjects
+}
+
+//jar {
+//    dependsOn configurations.childJars
+//            from { configurations.childJars.collect { zipTree(it) } }
+//}
+
 repositories {
     mavenCentral()
     jcenter()
@@ -19,9 +28,19 @@ repositories {
 val dokkaVersion: String = "1.5.0"
 
 dependencies {
-    implementation(project("engine"))
+//    api(project("engine"))
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
+
+    runtimeOnly(kotlin("reflect"))
+    runtimeOnly(kotlin("script-runtime"))
+    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-common:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.0") { isTransitive = false }
+    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:1.5.0") { isTransitive = false }
 
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
@@ -43,6 +62,7 @@ val javadocJar by tasks.registering(Jar::class) {
     dependsOn(tasks.dokkaHtml)
     archiveClassifier.set("javadoc")
     from(dokkaOutputDir)
+    dependsOn
 }
 
 java {

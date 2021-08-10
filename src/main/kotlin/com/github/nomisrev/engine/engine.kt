@@ -49,16 +49,13 @@ object Engine {
         // run each snipped and handle its result
         return snippets.mapIndexed { i, snip ->
             val result = try {
-                val engine: ScriptEngine = engineCache.getOrElse(snip.lang) {
+                val engine = engineCache.getOrElse(snip.lang) {
                     throw CompilationException(
-//                      path = snippets.first,
                         snippet = snip,
                         underlying = IllegalStateException("No engine configured for `${snip.lang}`"),
-                        msg = colored(ANSI_RED, "ΛNK compilation failed [ snippets.first ]")
+                        msg = colored(ANSI_RED, "ΛNK compilation failed, no engine configured for `${snip.lang}`")
                     )
                 }
-
-                println("Going to eval ${snip.code}")
 
                 engine.eval(snip.code)
             } catch (e: Exception) {
@@ -71,8 +68,8 @@ object Engine {
                 } else {
                     println(colored(ANSI_RED, "[✗ snippets.first [${i + 1}]"))
                     throw CompilationException(
-                        /*snippets.first, */snip, e, msg = "\n" + """
-                    | File located at: snippets.first
+                        snip, e, msg = "\n" + """
+                    | ${snip.path}
                     |
                     |```
                     |${snip.code}
@@ -88,14 +85,14 @@ object Engine {
 
             // handle results, ignore silent snippets
             if (snip.isSilent) snip
-            else snip.copy(result = result?.let {
+            else result?.let {
                 when {
                     // replace entire snippet with result
-                    snip.isReplace -> it.toString()
+                    snip.isReplace -> snip.copy(code = it.toString())
                     // simply append result
-                    else -> "// ${it.toString().replace("\n", "\n// ")}"
+                    else -> snip.copy(result = "// ${it.toString().replace("\n", "\n// ")}")
                 }
-            })
+            } ?: snip
         }
     }
 
