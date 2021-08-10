@@ -1,4 +1,4 @@
-package com.github.nomisrev.engine
+package com.github.nomisrev.ank
 
 public const val ANSI_RESET: String = "\u001B[0m"
 public const val ANSI_BLACK: String = "\u001B[30m"

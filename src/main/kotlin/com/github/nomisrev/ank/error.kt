@@ -1,8 +1,7 @@
-package com.github.nomisrev.engine
+package com.github.nomisrev.ank
 
 // TODO Update this to use Dokka's error reporting system
 public data class CompilationException(
-//    val path: Path,
     val snippet: Snippet,
     val underlying: Throwable,
     val msg: String

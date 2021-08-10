@@ -28,7 +28,6 @@ repositories {
 val dokkaVersion: String = "1.5.0"
 
 dependencies {
-//    api(project("engine"))
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
 

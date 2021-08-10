@@ -1,4 +1,4 @@
-package com.github.nomisrev.engine
+package com.github.nomisrev.ank
 
 public const val AnkBlock: String = ":ank"
 public const val AnkSilentBlock: String = ":ank:silent"

@@ -1,11 +1,5 @@
-package com.github.nomisrev
+package com.github.nomisrev.ank
 
-import com.github.nomisrev.engine.ANSI_GREEN
-import com.github.nomisrev.engine.AnkHeader
-import com.github.nomisrev.engine.Engine
-import com.github.nomisrev.engine.Snippet
-import com.github.nomisrev.engine.colored
-import com.github.nomisrev.engine.fenceRegexStart
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.model.DModule
 import org.jetbrains.dokka.model.doc.Br
@@ -33,9 +27,7 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
     // Could we optimise with `suspend` and running in parallel?
     override fun invoke(modules: List<DModule>): List<DModule> =
         modules.also {
-            ctx.logger.error(colored(ANSI_GREEN, AnkHeader))
-            ctx.logger.error("SourceSets: ${modules.flatMap { it.sourceSets }}")
-            ctx.logger.error("First classPath: ${modules.flatMap { it.sourceSets.firstOrNull()?.classpath.orEmpty() }}")
+            ctx.logger.error(colored(ANSI_PURPLE, "Λnk Dokka Plugin is running"))
 
             val classpath = modules.flatMap { it.sourceSets.firstOrNull()?.classpath.orEmpty() }
                 .map { it.toURI().toURL().toString() }
