@@ -1,6 +1,5 @@
 package template
 
-import junit.framework.Assert.assertNotNull
 import org.jetbrains.dokka.base.testApi.testRunner.BaseAbstractTest
 import org.junit.Test
 
@@ -17,7 +16,7 @@ class MyAwesomePluginTest : BaseAbstractTest() {
     fun `my awesome plugin should find packages and classes`() {
         testInline(
             """
-            |/src/main/kotlin/sample/Test.kt
+            |/src/main/kotlin/sample/testing.kt
             |package sample
             |/**
                * has KDoc
@@ -39,8 +38,8 @@ class MyAwesomePluginTest : BaseAbstractTest() {
                 val testedPackage = module.packages.find { it.name == "sample" }
                 val testedClass = testedPackage?.classlikes?.find { it.name == "TestingIsEasy" }
 
-                assertNotNull(testedPackage)
-                assertNotNull(testedClass)
+                requireNotNull(testedPackage)
+                requireNotNull(testedClass)
             }
         }
     }

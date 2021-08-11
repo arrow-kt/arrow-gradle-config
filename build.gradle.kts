@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "com.nomisrev"
-version = "1.0-SNAPSHOT"
+version = "1.1-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -21,6 +21,10 @@ val dokkaVersion: String = "1.5.0"
 dependencies {
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
     implementation("org.jetbrains.dokka:dokka-base:$dokkaVersion")
+
+    implementation("io.arrow-kt:arrow-core:0.13.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
+    implementation("io.arrow-kt:arrow-fx-coroutines:0.13.2")
 
     runtimeOnly(kotlin("reflect"))
     runtimeOnly(kotlin("script-runtime"))

@@ -20,7 +20,8 @@ dependencies {
     implementation("io.arrow-kt:arrow-fx-coroutines:0.13.2")
     implementation("io.kotest:kotest-property:4.6.1")
     implementation("io.kotest:kotest-assertions-core:4.6.1")
-    dokkaHtmlPlugin("org.example:awesome-dokka-plugin:1.0-SNAPSHOT")
+
+    dokkaHtmlPlugin("com.nomisrev:ank-dokka-plugin:1.1-SNAPSHOT")
 }
 
 tasks.withType<DokkaTask>().configureEach {

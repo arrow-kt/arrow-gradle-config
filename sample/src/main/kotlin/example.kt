@@ -28,23 +28,11 @@ fun exampleException(): Unit = Unit
  */
 fun exampleReplace(): Unit = Unit
 
-///**
-// * This function is documented, and Ank can correctly handle the exception
-// *
-// * ```java:ank
-// * public String hello(String name) {
-// *   return "Hello " + name + "!"
-// * }
-// *
-// * hello("Λrrow")
-// * ```
-// */
-//fun exampleJava(): Unit = Unit
-
 /**
  * This function is documented, and I have access to my classpath from docs
+ * Since it's silent, it doesn't add `// Either.Right(1)` as output.
  *
- * ```kotlin:ank
+ * ```kotlin:ank:silent
  * import arrow.core.Either
  *
  * Either.Right(1)
