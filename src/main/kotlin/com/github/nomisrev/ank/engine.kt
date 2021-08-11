@@ -1,5 +1,8 @@
 package com.github.nomisrev.ank
 
+import arrow.fx.coroutines.Resource
+import arrow.fx.coroutines.release
+import arrow.fx.coroutines.resource
 import java.io.PrintWriter
 import java.io.StringWriter
 import java.net.URL
@@ -9,6 +12,7 @@ import java.util.concurrent.ConcurrentMap
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
+import org.jetbrains.dokka.plugability.DokkaContext
 
 /**
  * Engine which can compile & evaluate code.
@@ -22,9 +26,40 @@ object Engine {
 
     // Maintains a cache with the classpath as KEY, and a set of ScriptEngines for that classpath (Java & Kotlin).
     private val engineCache: ConcurrentMap<List<String>, Map<String, ScriptEngine>> = ConcurrentHashMap()
+    private val singleEngineCache: ConcurrentMap<List<String>, ScriptEngine> = ConcurrentHashMap()
 
     // Mappings between fence lang, and extension names
     private val extensionMappings: Map<String, String> = mapOf("java" to "java", "kotlin" to "kts")
+
+    public fun compileCode(engine: ScriptEngine, snip: Snippet): Snippet {
+        val result = try {
+            engine.eval(snip.code)
+        } catch (e: Exception) {
+            if (snip.isFail) {
+                val sw = StringWriter()
+                val pw = PrintWriter(sw)
+                e.printStackTrace(pw)
+                snip.copy(result = sw.toString())
+            } else {
+                throw CompilationException(
+                    snip, e, msg = "\n" + """
+                    | ${snip.path}
+                    |
+                    |```
+                    |${snip.code}
+                    |```
+                    |${colored(ANSI_RED, e.localizedMessage)}
+                    """.trimMargin()
+                )
+            }
+        }
+
+        return when {
+            result == null || snip.isSilent || snip.isFail -> snip
+            snip.isReplace -> snip.copy(code = result.toString())
+            else -> snip.copy(code = snip.code + "\n" + "// ${result.toString().replace("\n", "\n// ")}")
+        }
+    }
 
     /**
      * Compiles a [List] of [Snippet]s for a given `classpath`.
@@ -44,7 +79,7 @@ object Engine {
         val originalClassLoader = Thread.currentThread().contextClassLoader
         Thread.currentThread().contextClassLoader = classLoader
 
-        val engineCache = getEngineCache(snippets, classLoader, compilerArgs)
+        val engineCache = createEngine(snippets, classLoader, compilerArgs)
 
         // run each snipped and handle its result
         return snippets.mapIndexed { i, snip ->
@@ -96,8 +131,25 @@ object Engine {
         }
     }
 
+    fun createEngine(classpath: List<String>): Resource<ScriptEngine> =
+        (resource {
+            val classLoader = classLoader(classpath)
+
+            // We need to get the original contextClassLoader which Dokka uses to run, and store it
+            // Then we need to set the contextClassloader so the engine can correctly define the compilation classpath
+            // We do this **whilst** decoupling the classLoader for the ScriptEngine with the classLoader of Dokka.
+            // This is because Dokka shadows some of the Kotlin compiler dependencies, having them mixed results in incorrect state
+            val originalClassLoader = Thread.currentThread().contextClassLoader
+            Thread.currentThread().contextClassLoader = classLoader
+            val manager = ScriptEngineManager(classLoader)
+            Pair(manager.getEngineByExtension("kts"), originalClassLoader)
+        } release { (_, originalClassLoader) ->
+            // When we're done, we reset back to the original classLoader
+            Thread.currentThread().contextClassLoader = originalClassLoader
+        }).map { (engine, _) -> engine }
+
     // Gets the engine cache for a given classpath
-    private fun getEngineCache(
+    private fun createEngine(
         snippets: List<Snippet>,
         classLoader: URLClassLoader?,
         compilerArgs: List<String>
