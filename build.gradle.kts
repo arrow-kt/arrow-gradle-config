@@ -1,16 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
+import java.io.ByteArrayOutputStream
 
 plugins {
     kotlin("jvm") version "1.5.0"
     id("org.jetbrains.dokka") version "1.5.0"
     `maven-publish`
     signing
+    base
 }
 
 group = "com.nomisrev"
 version = "1.1-SNAPSHOT"
-
 repositories {
     mavenCentral()
     jcenter()
@@ -39,6 +40,24 @@ dependencies {
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
     testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")
+}
+
+configurations { create("toCopy") }
+
+dependencies {
+    "toCopy"("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.21")
+}
+
+tasks.register("downloadJS233") {
+    doLast {
+        copy {
+            from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
+        }
+        exec {
+            workingDir = File("src/main/resources/jsr223")
+            executable = "../../../JarListScript.sh"
+        }
+    }
 }
 
 val dokkaOutputDir = "$buildDir/dokka"
