@@ -15,14 +15,6 @@ jobs:
           java-version: 8
       - name: "Test"
         run: ./gradlew clean test :sample:dokkaHtml --stacktrace
-      - name: "Prepare test reports"
-        if: ${{ always() }}
-        run: |
-          mkdir test-reports
-          for report in `ls -d arrow-libs/**/**/build/reports/tests`; do
-            module=$(echo $report | cut -d/ -f3)
-            cp -r $report test-reports/$module
-          done
       - name: Bundle the build report
         if: failure()
         run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
