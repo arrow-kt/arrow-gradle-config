@@ -24,22 +24,18 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
     override fun invoke(modules: List<DModule>): List<DModule> = runBlocking(Dispatchers.Default) {
         ctx.logger.warn(colored(ANSI_PURPLE, "Λnk Dokka Plugin is running"))
 
-        // Shall we process all packages in parallel??
         modules.parTraverse { module ->
-            val classpath = module.sourceSets.firstOrNull()?.classpath.orEmpty()
-                .map { it.toURI().toURL().toString() }
-
-            Engine.createEngine(classpath).use { engine ->
+            Engine.engine(module.classPath()).use { engine ->
                 val packages =
                     module.packages.parTraverseCodeBlock(module) { module, `package`, documentable, node, wrapper, codeBlock ->
                         Snippet(module, `package`, documentable, node, wrapper, codeBlock)?.let {
-                            Engine.compileCode(engine, it)
+                            engine.eval(it)
                         }?.toCodeBlock()
                     }
 
                 module.copy(packages = packages)
             }
 
-        }.also { Engine.printAndCloseTestEnivorment().let(::println) }
+        }.also { Engine.testReport()?.let(::println) }
     }
 }

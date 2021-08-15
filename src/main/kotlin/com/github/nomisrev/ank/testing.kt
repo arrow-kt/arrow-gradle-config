@@ -1,7 +1,6 @@
 package com.github.nomisrev.ank
 
-import java.util.*
-import kotlinx.coroutines.runBlocking
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * If a user writes a snippet that returns `TestResult`,
@@ -16,27 +15,42 @@ import kotlinx.coroutines.runBlocking
  *
  * This way the user can write multiple tests in a single snippet.
  */
-data class TestResult(val result: Result<Any?>, val name: String)
+typealias TestResult = Pair<String, Result<Any?>>
 
 class TestEnviroment {
-    private val buffer: MutableList<TestResult> = Collections.synchronizedList(mutableListOf())
+    private val buffer: AtomicReference<List<TestResult>> = AtomicReference(emptyList())
 
-    fun test(name: String, f: suspend () -> Any?): Unit =
-        runBlocking {
-            buffer.add(TestResult(runCatching{ f() }, name))
+    fun testReport(): String? = buffer.get()
+        ?.takeIf { it.isNotEmpty() }
+        ?.run {
+            """
+        |${colored(ANSI_PURPLE, "Ank Test Results:")}
+        |${passed()}${failed()}
+        """.trimMargin()
         }
 
-    fun closeAndReport(): String = """
-      Ank Test Results:
-      Passed: ${buffer.count { it.result.isSuccess }}/${buffer.size}
-      Failed: ${buffer.count { it.result.isFailure }}/${buffer.size}
-      ${
-        buffer.filter { it.result.isFailure }
-            .joinToString(separator = "\n", prefix = "  - ") {
-                "${it.name} failed with ${it.result.exceptionOrNull()?.let { t -> t.message ?: t.stackTrace }}"
-            }
-    }""".trimIndent()
+    fun List<TestResult>.passed(): String {
+        val successes = filter { it.second.isSuccess }
+        return if (successes.isNotEmpty()) colored(ANSI_GREEN, "Passed: ${successes.size}/${size}")
+        else ""
+    }
 
-    fun insert(result: TestEnviroment): Boolean =
-        buffer.addAll(result.buffer)
+    fun List<TestResult>.failed(): String {
+        val failures = filter { it.second.isFailure }
+        return if (failures.isNotEmpty()) {
+            val failures = filter { it.second.isFailure }
+            val failuresOut = failures.joinToString(separator = "\n", prefix = "  - ") {
+                "${it.first} failed with ${it.second.exceptionOrNull()?.let { t -> t.message ?: t.stackTrace }}"
+            }
+
+            colored(ANSI_RED, """
+             |Failed: ${failures.size}/${size}
+             |$failuresOut
+            """.trimMargin())
+        } else ""
+    }
+
+    fun insert(result: List<TestResult>): List<TestResult> =
+        buffer.updateAndGet { it + result }
 }
+

@@ -12,12 +12,14 @@ plugins {
 
 group = "com.nomisrev"
 version = "1.1-SNAPSHOT"
+
 repositories {
     mavenCentral()
     jcenter()
 }
 
 val dokkaVersion: String = "1.5.0"
+configurations { create("toCopy") }
 
 dependencies {
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
@@ -27,37 +29,11 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
     implementation("io.arrow-kt:arrow-fx-coroutines:0.13.2")
 
-    runtimeOnly(kotlin("reflect"))
-    runtimeOnly(kotlin("script-runtime"))
-    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-common:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:1.5.0") { isTransitive = false }
-
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
     testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")
-}
 
-configurations { create("toCopy") }
-
-dependencies {
     "toCopy"("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.21")
-}
-
-tasks.register("downloadJS233") {
-    doLast {
-        copy {
-            from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
-        }
-        exec {
-            workingDir = File("src/main/resources/jsr223")
-            executable = "../../../JarListScript.sh"
-        }
-    }
 }
 
 val dokkaOutputDir = "$buildDir/dokka"
@@ -68,6 +44,24 @@ tasks {
     }
     dokkaHtml {
         outputDirectory.set(file(dokkaOutputDir))
+    }
+
+    register("downloadJS233") {
+        doLast {
+            copy {
+                from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
+            }
+            exec {
+                workingDir = File("src/main/resources/jsr223")
+                executable = "../../../JarListScript.sh"
+            }
+        }
+    }
+
+    build {
+        if (!File("src/main/resources/jsr223/list").exists()) {
+            dependsOn("downloadJS233")
+        }
     }
 }
 

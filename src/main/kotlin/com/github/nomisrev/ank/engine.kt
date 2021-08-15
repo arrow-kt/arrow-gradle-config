@@ -7,86 +7,45 @@ import java.io.PrintWriter
 import java.io.StringWriter
 import java.net.URL
 import java.net.URLClassLoader
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentMap
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
 import org.jetbrains.dokka.utilities.ServiceLocator.toFile
+import org.jetbrains.kotlin.utils.ifEmpty
 
 /**
  * Engine which can compile & evaluate code.
  * This [Engine] is optimised to split the
  */
 object Engine {
+
     private val jss233Classpath: List<URL>
 
     init { // This is optional and experimental, but may save some memory.
         System.setProperty("kotlin.jsr223.experimental.resolve.dependencies.from.context.classloader", "true")
 
-        val loader =  Engine.javaClass.classLoader
+        val loader = Engine.javaClass.classLoader
         jss233Classpath = loader.getResource("jsr223/list")
             ?.toFile()?.useLines { paths: Sequence<String> ->
                 paths.mapNotNull { loader.getResource("jsr223/$it") }.toList()
-            }.orEmpty()
+            }.orEmpty().ifEmpty { throw RuntimeException("") }
     }
 
-    // Maintains a cache with the classpath as KEY, and a set of ScriptEngines for that classpath (Java & Kotlin).
-    private val engineCache: ConcurrentMap<List<String>, Map<String, ScriptEngine>> = ConcurrentHashMap()
-    private val singleEngineCache: ConcurrentMap<List<String>, ScriptEngine> = ConcurrentHashMap()
-
-    // Mappings between fence lang, and extension names
-    private val extensionMappings: Map<String, String> = mapOf("java" to "java", "kotlin" to "kts")
-
-    // TestEnviroment is not on the classpath of ScriptEngine...
     private val enviroment = TestEnviroment()
-    fun printAndCloseTestEnivorment(): String = enviroment.closeAndReport()
+    fun testReport(): String? = enviroment.testReport()
 
-    public fun compileCode(engine: ScriptEngine, snip: Snippet): Snippet {
-        val snippet = """
-          | import com.github.nomisrev.ank.*
-          | 
-          | val enviroment = TestEnviroment()
-          |
-          | fun test(name: String, f: suspend () -> Any?): Unit =
-          |  enviroment.test(name, f)
-          |  
-          | ${snip.code}
-          | 
-          | enviroment""".trimMargin()
-        val result = try {
-            engine.eval(snippet)
+    // We need to communicate between two different classspaths, so we don't share types
+    // Use String text to communicate beteween processes
+    private val seperator = "@@@@@@@@@@@@@@@@@@@@@@@"
 
-        } catch (e: Exception) {
-            if (snip.isFail) {
-                val sw = StringWriter()
-                val pw = PrintWriter(sw)
-                e.printStackTrace(pw)
-                snip.copy(result = sw.toString())
-            } else {
-                throw CompilationException(
-                    snip, e, msg = "\n" + """
-                    | ${snip.path.prettyPrint()}
-                    |
-                    |```
-                    |$snippet
-                    |```
-                    |${colored(ANSI_RED, e.localizedMessage)}
-                    """.trimMargin()
-                )
-            }
+    fun String.decode(): List<TestResult> =
+        split(",").flatMap {
+            val (state, name, res) = it.split(seperator).takeIf { it.size == 3 } ?: return@flatMap emptyList()
+            when (state) {
+                "SUCCESS" -> Pair(name, Result.success(res))
+                else -> Pair(name, Result.failure(AssertionError(res)))
+            }.let(::listOf)
         }
-
-        if (result is TestEnviroment) enviroment.insert(result)
-
-        println("result ===> $result")
-
-        return when {
-            result == null || snip.isSilent || snip.isFail -> snip
-            snip.isReplace -> snip.copy(code = result.toString())
-            else -> snip.copy(code = snip.code + "\n" + "// ${result.toString().replace("\n", "\n// ")}")
-        }
-    }
 
     /**
      * Compiles a [List] of [Snippet]s for a given `classpath`.
@@ -96,69 +55,7 @@ object Engine {
      * otherwise you can programmatically access the ClassPath or load/pass it during build time.
      * Gradle knows the classpath, and can pass it as an argument to the program.
      */
-    public fun compileCode(snippets: List<Snippet>, compilerArgs: List<String>): List<Snippet> {
-        val classLoader = classLoader(compilerArgs)
-
-        // We need to get the original contextClassLoader which Dokka uses to run, and store it
-        // Then we need to set the contextClassloader so the engine can correctly define the compilation classpath
-        // We do this **whilst** decoupling the classLoader for the ScriptEngine with the classLoader of Dokka.
-        // This is because Dokka shadows some of the Kotlin compiler dependencies, having them mixed results in incorrect state
-        val originalClassLoader = Thread.currentThread().contextClassLoader
-        Thread.currentThread().contextClassLoader = classLoader
-
-        val engineCache = createEngine(snippets, classLoader, compilerArgs)
-
-        // run each snipped and handle its result
-        return snippets.mapIndexed { i, snip ->
-            val result = try {
-                val engine = engineCache.getOrElse(snip.lang) {
-                    throw CompilationException(
-                        snippet = snip,
-                        underlying = IllegalStateException("No engine configured for `${snip.lang}`"),
-                        msg = colored(ANSI_RED, "ΛNK compilation failed, no engine configured for `${snip.lang}`")
-                    )
-                }
-
-                engine.eval(snip.code)
-            } catch (e: Exception) {
-                // raise error and print to console
-                if (snip.isFail) {
-                    val sw = StringWriter()
-                    val pw = PrintWriter(sw)
-                    e.printStackTrace(pw)
-                    return@mapIndexed snip.copy(result = sw.toString())
-                } else {
-                    println(colored(ANSI_RED, "[✗ snippets.first [${i + 1}]"))
-                    throw CompilationException(
-                        snip, e, msg = "\n" + """
-                    | ${snip.path.prettyPrint()}
-                    |
-                    |```
-                    |${snip.code}
-                    |```
-                    |${colored(ANSI_RED, e.localizedMessage)}
-                    """.trimMargin()
-                    )
-                }
-            } finally {
-                // When we're done, we reset back to the original classLoader
-                Thread.currentThread().contextClassLoader = originalClassLoader
-            }
-
-            // handle results, ignore silent snippets
-            if (snip.isSilent) snip
-            else result?.let {
-                when {
-                    // replace entire snippet with result
-                    snip.isReplace -> snip.copy(code = it.toString())
-                    // simply append result
-                    else -> snip.copy(result = "// ${it.toString().replace("\n", "\n// ")}")
-                }
-            } ?: snip
-        }
-    }
-
-    fun createEngine(classpath: List<String>): Resource<ScriptEngine> =
+    fun engine(classpath: List<URL>): Resource<ScriptEngine> =
         (resource {
             val classLoader = classLoader(classpath)
 
@@ -169,47 +66,80 @@ object Engine {
             val originalClassLoader = Thread.currentThread().contextClassLoader
             Thread.currentThread().contextClassLoader = classLoader
             val manager = ScriptEngineManager(classLoader)
-            val engine = manager.getEngineByExtension("kts")
+            val engine = manager.getEngineByExtension("kts").apply {
+                setBindings(createBindings(), ScriptContext.ENGINE_SCOPE)
+                eval(testPrelude) // Setup testing prelude
+            }
             Pair(engine, originalClassLoader)
-        } release { (_, originalClassLoader) ->
+        } release { (engine, originalClassLoader) ->
+            val result = engine.eval("enviroment.encode()") // Get test enviroment results
+            if (result is String) enviroment.insert(result.decode())
             // When we're done, we reset back to the original classLoader
             Thread.currentThread().contextClassLoader = originalClassLoader
         }).map { (engine, _) -> engine }
-
-    // Gets the engine cache for a given classpath
-    private fun createEngine(
-        snippets: List<Snippet>,
-        classLoader: URLClassLoader?,
-        compilerArgs: List<String>
-    ): Map<String, ScriptEngine> {
-        val cache = engineCache[compilerArgs]
-        return if (cache == null) { // create a new engine
-            val seManager = ScriptEngineManager(classLoader)
-            val langs = snippets.map(Snippet::lang).distinct()
-            val engines = langs.toList().associateWith {
-                seManager.getEngineByExtension(extensionMappings.getOrDefault(it, "kts"))
-            }
-            engineCache.putIfAbsent(compilerArgs, engines) ?: engines
-        } else { // reset an engine. Non thread-safe
-            cache.forEach { (_, engine) ->
-                engine.setBindings(engine.createBindings(), ScriptContext.ENGINE_SCOPE)
-            }
-            cache
-        }
-    }
 
     /*
      * Creates a **new** [URLClassLoader] **without** a parent.
      * This [URLClassLoader] has references to all the dependencies it needs to run [ScriptEngine],
      * and it holds all the user desired dependencies so we can evaluate code with user dependencies.
      */
-    private fun classLoader(compilerArgs: List<String>): URLClassLoader? =
-        Engine::class.java.classLoader
-            .let { it as? URLClassLoader }
-            ?.let { original ->
-                URLClassLoader(
-                    (jss233Classpath + compilerArgs.map(::URL)).toTypedArray(),
-                    null // Decouple from parent ClassLoader
-                )
-            }
+    private fun classLoader(compilerArgs: List<URL>): URLClassLoader? =
+        URLClassLoader(
+            (jss233Classpath + compilerArgs).toTypedArray(),
+            null // Decouple from parent ClassLoader
+        )
+
+    private val testPrelude: String = """
+      | import kotlinx.coroutines.runBlocking
+      | 
+      | val enviroment = ArrayList<Pair<String, Result<Any?>>>()
+      | 
+      | fun test(name: String, f: suspend () -> Any?) =
+      |     runBlocking<Unit> {
+      |         val result = Pair(name, runCatching { f() })
+      |         enviroment.add(result)
+      |     }
+      |     
+      | val seperator = "$seperator"
+      | 
+      | fun List<Pair<String, Result<Any?>>>.encode(): String =
+      |     joinToString(separator = ",") { (name, result) ->
+      |         result.fold(
+      |             { "SUCCESS${'$'}seperator${'$'}name${'$'}seperator${'$'}it" },
+      |             { "FAILURE${'$'}seperator${'$'}name${'$'}seperator${'$'}{it.message}" })
+      |     }
+    """.trimMargin()
+}
+
+/**
+ * Evaluates a Snippet and returns it as [Snippet]
+ */
+public fun ScriptEngine.eval(snip: Snippet): Snippet {
+    val result = try {
+        eval(snip.code)
+    } catch (e: Exception) {
+        if (snip.isFail) {
+            val sw = StringWriter()
+            val pw = PrintWriter(sw)
+            e.printStackTrace(pw)
+            snip.copy(result = sw.toString())
+        } else {
+            throw CompilationException(
+                snip, e, msg = "\n" + """
+                    | ${snip.path.prettyPrint()}
+                    |
+                    |```
+                    |${snip.code}
+                    |```
+                    |${colored(ANSI_RED, e.localizedMessage)}
+                    """.trimMargin()
+            )
+        }
+    }
+
+    return when {
+        result == null || snip.isSilent || snip.isFail -> snip
+        snip.isReplace -> snip.copy(code = result.toString())
+        else -> snip.copy(code = snip.code + "\n" + "// ${result.toString().replace("\n", "\n// ")}")
+    }
 }
