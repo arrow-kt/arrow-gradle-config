@@ -39,29 +39,36 @@ dependencies {
 val dokkaOutputDir = "$buildDir/dokka"
 
 tasks {
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    dokkaHtml {
-        outputDirectory.set(file(dokkaOutputDir))
-    }
-
     register("downloadJS233") {
         doLast {
+            File("src/main/resources/jsr223").also { it.mkdirs() }
+
             copy {
                 from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
             }
             exec {
                 workingDir = File("src/main/resources/jsr223")
-                executable = "../../../JarListScript.sh"
+                executable = "../../../../JarListScript.sh"
             }
         }
     }
 
-    build {
+    clean {
+        doFirst {
+            File("src/main/resources/jsr223").deleteRecursively()
+        }
+    }
+
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+
         if (!File("src/main/resources/jsr223/list").exists()) {
             dependsOn("downloadJS233")
         }
+    }
+
+    dokkaHtml {
+        outputDirectory.set(file(dokkaOutputDir))
     }
 }
 
