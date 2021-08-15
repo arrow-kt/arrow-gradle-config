@@ -41,14 +41,16 @@ val dokkaOutputDir = "$buildDir/dokka"
 tasks {
     register("downloadJS233") {
         doLast {
-            File("src/main/resources/jsr223").also { it.mkdirs() }
+            if (!File("src/main/resources/jsr223/list").exists()) {
+                File("src/main/resources/jsr223").also { it.mkdirs() }
 
-            copy {
-                from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
-            }
-            exec {
-                workingDir = File("src/main/resources/jsr223")
-                executable = "../../../../JarListScript.sh"
+                copy {
+                    from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
+                }
+                exec {
+                    workingDir = File("src/main/resources/jsr223")
+                    executable = "../../../../JarListScript.sh"
+                }
             }
         }
     }
@@ -61,10 +63,7 @@ tasks {
 
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
-
-        if (!File("src/main/resources/jsr223/list").exists()) {
-            dependsOn("downloadJS233")
-        }
+        dependsOn("downloadJS233")
     }
 
     dokkaHtml {
