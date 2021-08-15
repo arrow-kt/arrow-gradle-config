@@ -24,9 +24,6 @@ class MyAwesomePluginTest : BaseAbstractTest() {
                * line 3
                *
                * ```kotlin:ank
-               * val x: Int = 1
-               * println("Hello")
-               * x
                * ```
                */
             |data class TestingIsEasy(val reason: String)

@@ -40,6 +40,6 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
                 module.copy(packages = packages)
             }
 
-        }
+        }.also { Engine.printAndCloseTestEnivorment().let(::println) }
     }
 }

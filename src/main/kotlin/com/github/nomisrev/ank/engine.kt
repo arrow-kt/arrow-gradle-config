@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentMap
 import javax.script.ScriptContext
 import javax.script.ScriptEngine
 import javax.script.ScriptEngineManager
-import org.jetbrains.dokka.plugability.DokkaContext
 
 /**
  * Engine which can compile & evaluate code.
@@ -31,9 +30,25 @@ object Engine {
     // Mappings between fence lang, and extension names
     private val extensionMappings: Map<String, String> = mapOf("java" to "java", "kotlin" to "kts")
 
+    // TestEnviroment is not on the classpath of ScriptEngine...
+    private val enviroment = TestEnviroment()
+    fun printAndCloseTestEnivorment(): String = enviroment.closeAndReport()
+
     public fun compileCode(engine: ScriptEngine, snip: Snippet): Snippet {
+        val snippet = """
+          | import com.github.nomisrev.ank.*
+          | 
+          | val enviroment = TestEnviroment()
+          |
+          | fun test(name: String, f: suspend () -> Any?): Unit =
+          |  enviroment.test(name, f)
+          |  
+          | ${snip.code}
+          | 
+          | enviroment""".trimMargin()
         val result = try {
-            engine.eval(snip.code)
+            engine.eval(snippet)
+
         } catch (e: Exception) {
             if (snip.isFail) {
                 val sw = StringWriter()
@@ -43,16 +58,20 @@ object Engine {
             } else {
                 throw CompilationException(
                     snip, e, msg = "\n" + """
-                    | ${snip.path}
+                    | ${snip.path.prettyPrint()}
                     |
                     |```
-                    |${snip.code}
+                    |$snippet
                     |```
                     |${colored(ANSI_RED, e.localizedMessage)}
                     """.trimMargin()
                 )
             }
         }
+
+        if (result is TestEnviroment) enviroment.insert(result)
+
+        println("result ===> $result")
 
         return when {
             result == null || snip.isSilent || snip.isFail -> snip
@@ -104,7 +123,7 @@ object Engine {
                     println(colored(ANSI_RED, "[✗ snippets.first [${i + 1}]"))
                     throw CompilationException(
                         snip, e, msg = "\n" + """
-                    | ${snip.path}
+                    | ${snip.path.prettyPrint()}
                     |
                     |```
                     |${snip.code}
@@ -142,7 +161,8 @@ object Engine {
             val originalClassLoader = Thread.currentThread().contextClassLoader
             Thread.currentThread().contextClassLoader = classLoader
             val manager = ScriptEngineManager(classLoader)
-            Pair(manager.getEngineByExtension("kts"), originalClassLoader)
+            val engine = manager.getEngineByExtension("kts")
+            Pair(engine, originalClassLoader)
         } release { (_, originalClassLoader) ->
             // When we're done, we reset back to the original classLoader
             Thread.currentThread().contextClassLoader = originalClassLoader
@@ -178,14 +198,15 @@ object Engine {
     private fun classLoader(compilerArgs: List<String>): URLClassLoader? =
         Engine::class.java.classLoader
             .let { it as? URLClassLoader }
-            ?.let {
+            ?.let { original ->
                 URLClassLoader(
-                    it.urLs.filter {
+                    original.urLs.filter {
                         it.file.contains("/kotlin-script") ||
                                 it.file.contains("/kotlin-stdlib") ||
                                 it.file.contains("/kotlin-reflect") ||
                                 it.file.contains("/kotlinx-coroutines") ||
-                                it.file.contains("/kotlin-analysis-compiler")
+                                it.file.contains("/kotlin-analysis-compiler") ||
+                                it.file.contains("/classes/kotlin/main") // Missing here facked
                     }.toTypedArray() + compilerArgs.map(::URL).toTypedArray(),
                     null // Decouple from parent ClassLoader
                 )

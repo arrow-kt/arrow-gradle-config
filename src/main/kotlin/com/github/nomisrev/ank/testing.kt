@@ -1,6 +1,6 @@
 package com.github.nomisrev.ank
 
-import arrow.core.Either
+import java.util.*
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -16,12 +16,27 @@ import kotlinx.coroutines.runBlocking
  *
  * This way the user can write multiple tests in a single snippet.
  */
-data class TestResult(val result: Either<Throwable, Any?>, val name: String)
+data class TestResult(val result: Result<Any?>, val name: String)
 
-operator fun String.invoke(f: suspend () -> Any?): TestResult =
-    test(this, f)
+class TestEnviroment {
+    private val buffer: MutableList<TestResult> = Collections.synchronizedList(mutableListOf())
 
-fun test(name: String, f: suspend () -> Any?): TestResult =
-    runBlocking {
-        TestResult(Either.catch { f() }, name)
-    }
+    fun test(name: String, f: suspend () -> Any?): Unit =
+        runBlocking {
+            buffer.add(TestResult(runCatching{ f() }, name))
+        }
+
+    fun closeAndReport(): String = """
+      Ank Test Results:
+      Passed: ${buffer.count { it.result.isSuccess }}/${buffer.size}
+      Failed: ${buffer.count { it.result.isFailure }}/${buffer.size}
+      ${
+        buffer.filter { it.result.isFailure }
+            .joinToString(separator = "\n", prefix = "  - ") {
+                "${it.name} failed with ${it.result.exceptionOrNull()?.let { t -> t.message ?: t.stackTrace }}"
+            }
+    }""".trimIndent()
+
+    fun insert(result: TestEnviroment): Boolean =
+        buffer.addAll(result.buffer)
+}
