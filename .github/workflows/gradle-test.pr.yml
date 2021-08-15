@@ -14,4 +14,4 @@ jobs:
         with:
           java-version: 8
       - name: "Test"
-        run: ./gradlew clean test :samples:dokkaHtml --stacktrace
+        run: ./gradlew clean test :sample:dokkaHtml --stacktrace
