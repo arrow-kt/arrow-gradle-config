@@ -28,7 +28,9 @@ object Engine {
         jss233Classpath = loader.getResource("jsr223/list")
             ?.toFile()?.useLines { paths: Sequence<String> ->
                 paths.mapNotNull { loader.getResource("jsr223/$it") }.toList()
-            }.orEmpty().ifEmpty { throw RuntimeException("") }
+            }.orEmpty().ifEmpty {
+                throw RuntimeException("JS223 Classpath not found. Incorrect build.")
+            }
     }
 
     private val enviroment = TestEnviroment()
