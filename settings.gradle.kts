@@ -4,5 +4,10 @@ enableFeaturePreview("VERSION_CATALOGS")
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
+        gradlePluginPortal()
     }
 }
+
+include(
+    "arrow-kotlin-multiplatform",
+)
