@@ -17,6 +17,4 @@ dependencies {
     implementation(projects.corePublishing)
 
     implementation(libs.gradle.publishPluginx)
-    implementation(libs.ktlint.gradle)
-    implementation(libs.kotlin.gradlePluginx)
 }

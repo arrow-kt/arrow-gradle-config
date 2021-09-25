@@ -14,8 +14,5 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(libs.gradle.publishPluginx)
     implementation(libs.gradleNexus.publishPluginx)
-    implementation(libs.ktlint.gradle)
-    implementation(libs.kotlin.gradlePluginx)
 }
