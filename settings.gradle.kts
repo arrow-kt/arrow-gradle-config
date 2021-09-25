@@ -10,6 +10,7 @@ dependencyResolutionManagement {
 
 include(
     ":arrow-kotlin-multiplatform",
+    ":arrow-nexus",
     ":arrow-publish-kotlin-jvm",
     ":arrow-publish-kotlin-multiplatform",
 )

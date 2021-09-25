@@ -2,11 +2,10 @@
 gradlePublish = "0.13.0"
 ktlint = "10.2.0"
 kotlin = "1.5.31"
+nexusPublish = "1.1.0"
 
 [libraries]
 gradle-publishPluginx = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradlePublish" }
+gradleNexus-publishPluginx = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexusPublish" }
 kotlin-gradlePluginx = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 ktlint-gradle = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
-
-[plugins]
-kotlinJVM = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

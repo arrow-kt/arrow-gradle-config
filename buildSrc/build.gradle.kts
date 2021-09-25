@@ -13,5 +13,6 @@ dependencies {
     implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
 
     implementation(libs.gradle.publishPluginx)
+    implementation(libs.gradleNexus.publishPluginx)
     implementation(libs.kotlin.gradlePluginx)
 }
