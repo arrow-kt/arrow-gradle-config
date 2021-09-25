@@ -1,6 +1,6 @@
 plugins {
     `kotlin-dsl`
-    `publish-kotlin-jvm`
+    id("publish-kotlin-jvm")
 }
 
 dependencies {

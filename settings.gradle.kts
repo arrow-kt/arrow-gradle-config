@@ -19,3 +19,5 @@ include(
 include(
     ":core-publishing",
 )
+
+includeBuild("build-src")

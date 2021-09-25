@@ -1,5 +1,5 @@
 plugins {
-    nexus
+    id("nexus")
 }
 
 allprojects {
