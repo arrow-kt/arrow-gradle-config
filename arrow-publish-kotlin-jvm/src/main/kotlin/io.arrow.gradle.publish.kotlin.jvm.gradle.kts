@@ -1,12 +1,9 @@
+import io.arrow.gradle.core.publishing.setupPublishing
+import io.arrow.gradle.core.publishing.signPublications
+
 plugins {
     `maven-publish`
-    id("com.gradle.plugin-publish")
     signing
-}
-
-pluginBundle {
-    website = property("pom.smc.url").toString()
-    vcsUrl = property("pom.smc.connection").toString()
 }
 
 val docsJar by project.tasks.creating(Jar::class) {
@@ -22,6 +19,6 @@ val sourcesJar by project.tasks.creating(Jar::class) {
     from((project.properties["sourceSets"] as SourceSetContainer)["main"].allSource)
 }
 
-setupPublishing(docsJar, sourcesJar)
+setupPublishing(docsJar, sourcesJar, createMavenFromJava = true)
 
 signPublications()

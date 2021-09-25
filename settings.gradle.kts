@@ -9,5 +9,11 @@ dependencyResolutionManagement {
 }
 
 include(
-    "arrow-kotlin-multiplatform",
+    ":arrow-kotlin-multiplatform",
+    ":arrow-publish-kotlin-jvm",
+    ":arrow-publish-kotlin-multiplatform",
+)
+
+include(
+    ":core-publishing",
 )

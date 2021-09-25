@@ -1,15 +1,21 @@
+package io.arrow.gradle.core.publishing
+
+import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.plugins.signing.SigningExtension
 
-fun SigningExtension.signPublications() {
-    if (isSnapshot.not()) {
-        try {
-            signInMemory()
-        } catch (_: Throwable) {
-            useGpgCmd()
+fun Project.signPublications() {
+    configure<SigningExtension> {
+        if (isSnapshot.not()) {
+            try {
+                signInMemory()
+            } catch (_: Throwable) {
+                useGpgCmd()
+            }
+            sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
         }
-        sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
     }
 }
 
