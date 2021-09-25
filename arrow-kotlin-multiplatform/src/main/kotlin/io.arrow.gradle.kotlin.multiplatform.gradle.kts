@@ -112,7 +112,8 @@ kotlin {
     }
 }
 
-group = property("GROUP").toString()
+group = property("projects.group").toString()
+version = property("projects.version").toString()
 
 configurations.all {
     resolutionStrategy.cacheChangingModulesFor(0, "seconds")

@@ -3,6 +3,6 @@ plugins {
 }
 
 allprojects {
-    group = property("group").toString()
-    version = property("version").toString()
+    group = property("projects.group").toString()
+    version = property("projects.version").toString()
 }
