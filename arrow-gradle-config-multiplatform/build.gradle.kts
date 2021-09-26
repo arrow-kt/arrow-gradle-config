@@ -5,8 +5,8 @@ plugins {
 
 gradlePlugin {
     plugins {
-        named("io.arrow.gradle.kotlin.multiplatform") {
-            id = "io.arrow.gradle.kotlin.multiplatform"
+        named("io.arrow-kt.arrow-gradle-config-multiplatform") {
+            id = "io.arrow-kt.arrow-gradle-config-multiplatform"
             displayName = "Arrow Kotlin Multiplatform Gradle Config"
             description = "Basic Gradle config for Kotlin Multiplatform Arrow projects"
         }

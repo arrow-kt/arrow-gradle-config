@@ -5,8 +5,8 @@ plugins {
 
 gradlePlugin {
     plugins {
-        named("io.arrow.gradle.publish.kotlin.multiplatform") {
-            id = "io.arrow.gradle.publish.kotlin.multiplatform"
+        named("io.arrow-kt.arrow-gradle-config-publish-multiplatform") {
+            id = "io.arrow-kt.arrow-gradle-config-publish-multiplatform"
             displayName = "Arrow Kotlin Multiplatform publishing Gradle Config"
             description = "Basic publishing Gradle config for Kotlin Multiplatform Arrow projects"
         }
@@ -14,7 +14,7 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(projects.corePublishing)
+    implementation(projects.arrowGradleConfigCorePublishing)
 
     implementation(libs.gradle.publishPluginx)
 }

@@ -5,8 +5,8 @@ plugins {
 
 gradlePlugin {
     plugins {
-        named("io.arrow.gradle.nexus") {
-            id = "io.arrow.gradle.nexus"
+        named("io.arrow-kt.arrow-gradle-config-nexus") {
+            id = "io.arrow-kt.arrow-gradle-config-nexus"
             displayName = "Arrow Nexus Gradle Config"
             description = "Basic Nexus Gradle config for Arrow publications"
         }

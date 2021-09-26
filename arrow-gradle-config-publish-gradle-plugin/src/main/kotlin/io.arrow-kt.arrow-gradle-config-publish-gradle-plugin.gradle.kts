@@ -25,6 +25,6 @@ setupPublishing(docsJar, sourcesJar)
 signPublications()
 
 pluginBundle {
-    website = property("pom.smc.url").toString()
-    vcsUrl = property("pom.smc.connection").toString()
+    website = property("pom.url").toString()
+    vcsUrl = property("pom.smc.url").toString()
 }

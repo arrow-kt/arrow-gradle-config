@@ -6,7 +6,8 @@ In an Arrow KMP project, just add to the plugin block:
 
 ```kotlin
 plugins {
-    id("io.arrow.gradle.kotlin.multiplatform")  // this one
+    kotlin("multiplatform") version "$version"
+    id("io.arrow.gradle.kotlin.multiplatform")
     // ...
 }
 
@@ -19,7 +20,7 @@ Add to the root `build.gradle.kts` the next plugin to the plugin block if it is 
 
 ```kotlin
 plugins {
-    id("io.arrow.gradle.nexus")
+    id("io.arrow-kt.arrow-gradle-config-nexus") version "$version"
     // ...
 }
 ```
@@ -74,7 +75,7 @@ OSS_STAGING_PROFILE_ID=[stagingProfileId]
 
 ```kotlin
 plugins {
-    id("io.arrow.gradle.publish.kotlin.multiplatform")
+    id("io.arrow-kt.arrow-gradle-config-publish-multiplatform") version "$version"
     // ...
 }
 
@@ -94,7 +95,7 @@ projects.version=[version]
 
 ```kotlin
 plugins {
-    id("io.arrow.gradle.publish.kotlin.jvm")
+    id("io.arrow-kt.arrow-gradle-config-publish-jvm") version "$version"
     // ...
 }
 
@@ -105,7 +106,7 @@ plugins {
 
 ```kotlin
 plugins {
-    id("io.arrow.gradle.publish.gradle.plugin")
+    id("io.arrow-kt.arrow-gradle-config-publish-gradle-plugin") version "$version"
     // ...
 }
 

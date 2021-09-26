@@ -9,15 +9,15 @@ dependencyResolutionManagement {
 }
 
 include(
-    ":arrow-kotlin-multiplatform",
-    ":arrow-nexus",
-    ":arrow-publish-gradle-plugin",
-    ":arrow-publish-kotlin-jvm",
-    ":arrow-publish-kotlin-multiplatform",
+    ":arrow-gradle-config-multiplatform",
+    ":arrow-gradle-config-nexus",
+    ":arrow-gradle-config-publish-gradle-plugin",
+    ":arrow-gradle-config-publish-jvm",
+    ":arrow-gradle-config-publish-multiplatform",
 )
 
 include(
-    ":core-publishing",
+    ":arrow-gradle-config-core-publishing",
 )
 
 includeBuild("build-src")
