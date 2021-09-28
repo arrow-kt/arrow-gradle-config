@@ -16,5 +16,6 @@ gradlePlugin {
 dependencies {
     implementation(projects.arrowGradleConfigCorePublishing)
 
+    implementation(libs.dokka.gradlePluginx)
     implementation(libs.gradle.publishPluginx)
 }
