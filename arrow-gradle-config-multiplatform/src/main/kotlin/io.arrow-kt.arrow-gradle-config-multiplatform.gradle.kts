@@ -1,9 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+
 plugins {
     kotlin("multiplatform").apply(false)
     id("org.jlleitschuh.gradle.ktlint")
 }
 
-kotlin {
+configure<KotlinMultiplatformExtension> {
     explicitApi()
     jvm {
         // JVM target ignores Java sources and compiles only Kotlin source files.
