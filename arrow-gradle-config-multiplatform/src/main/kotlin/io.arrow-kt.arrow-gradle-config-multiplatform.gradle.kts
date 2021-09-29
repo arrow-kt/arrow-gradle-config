@@ -56,7 +56,7 @@ configure<KotlinMultiplatformExtension> {
         val watchosTest by getting
         val tvosTest by getting
 
-        named("nativeMain") {
+        create("nativeMain") {
             dependsOn(commonMain)
             macosX64Main.dependsOn(this)
             macosArm64Main.dependsOn(this)
@@ -66,7 +66,7 @@ configure<KotlinMultiplatformExtension> {
             watchosMain.dependsOn(this)
             tvosMain.dependsOn(this)
         }
-        named("nativeTest") {
+        create("nativeTest") {
             dependsOn(commonTest)
             macosX64Test.dependsOn(this)
             macosArm64Test.dependsOn(this)
