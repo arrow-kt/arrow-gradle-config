@@ -6,6 +6,6 @@ plugins {
 dependencies {
     implementation(libs.dokka.base)
     implementation(libs.dokka.gfmPluginx)
-    compileOnly(libs.dokka.gradlePluginx)
+    implementation(libs.dokka.gradlePluginx)
     implementation(libs.gradle.publishPluginx)
 }
