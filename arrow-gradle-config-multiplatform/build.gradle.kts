@@ -15,5 +15,5 @@ gradlePlugin {
 
 dependencies {
     compileOnly(libs.kotlin.gradlePluginx)
-    implementation(libs.ktlint.gradle)
+    compileOnly(libs.ktlint.gradle)
 }
