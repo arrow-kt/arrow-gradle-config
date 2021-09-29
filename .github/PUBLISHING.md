@@ -74,14 +74,28 @@
 
 ### Snapshot
 
-The version should end with `-SNAPSHOT`
+The version should end with `-SNAPSHOT` which is added automatically by `reckon.stage=snapshot`
 
-```
-./gradlew publishToSonatype
+```shell
+./gradlew publishToSonatype -P"reckon.stage"="snapshot" -P"reckon.scope"="patch"
 ```
 
 ### Release
 
+- Increment the version indicating the `stage` (`alpha`, `beta`, `rc` or `final`) and
+  the `scope` (`major`, `minor`, or `patch`):
+
+```shell
+./gradlew reckonTagCreate -P"reckon.stage"="final" -P"reckon.scope"="patch"
 ```
-./gradlew publishToSonatype
+
+- Publish it to MavenCentral
+
+```shell
+./gradlew publishToSonatype closeSonatypeStagingRepository
 ```
+
+> If the artifacts are published from a local computer, the tag should be pushed to the remote repo
+
+> If the tag is pushed the GitHub Action will run and publish the artifacts to the Nexus repo, drop
+> the duplicated repo if they are published from both, a local computer and from GitHub Action run
