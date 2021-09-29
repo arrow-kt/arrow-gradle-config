@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-setupDokka()
+//setupDokka()
 
 val docsJar by project.tasks.creating(Jar::class) {
     group = "build"
