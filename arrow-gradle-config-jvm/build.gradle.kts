@@ -13,6 +13,8 @@ gradlePlugin {
     }
 }
 
+setJava8Compatibility()
+
 dependencies {
     compileOnly(libs.kotlin.gradlePluginx)
     compileOnly(libs.ktlint.gradle)

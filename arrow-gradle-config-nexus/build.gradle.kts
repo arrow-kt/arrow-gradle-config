@@ -13,6 +13,8 @@ gradlePlugin {
     }
 }
 
+setJava8Compatibility()
+
 dependencies {
     implementation(libs.gradleNexus.publishPluginx)
 }
