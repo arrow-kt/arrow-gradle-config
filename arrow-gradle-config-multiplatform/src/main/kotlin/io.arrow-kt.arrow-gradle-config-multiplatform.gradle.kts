@@ -82,44 +82,6 @@ configure<KotlinMultiplatformExtension> {
             watchosX64Main.dependsOn(this)
             watchosX86Main.dependsOn(this)
         }
-
-        val commonTest by getting
-        val mingwX64Test by getting
-        val linuxX64Test by getting
-        val iosArm32Test by getting
-        val iosArm64Test by getting
-        val iosSimulatorArm64Test by getting
-        val iosX64Test by getting
-        val macosArm64Test by getting
-        val macosX64Test by getting
-        val tvosArm64Test by getting
-        val tvosSimulatorArm64Test by getting
-        val tvosX64Test by getting
-        val watchosArm32Test by getting
-        val watchosArm64Test by getting
-        val watchosSimulatorArm64Test by getting
-        val watchosX64Test by getting
-        val watchosX86Test by getting
-
-        create("nativeTest") {
-            dependsOn(commonTest)
-            mingwX64Test.dependsOn(this)
-            linuxX64Test.dependsOn(this)
-            iosArm32Test.dependsOn(this)
-            iosArm64Test.dependsOn(this)
-            iosSimulatorArm64Test.dependsOn(this)
-            iosX64Test.dependsOn(this)
-            macosArm64Test.dependsOn(this)
-            macosX64Test.dependsOn(this)
-            tvosArm64Test.dependsOn(this)
-            tvosSimulatorArm64Test.dependsOn(this)
-            tvosX64Test.dependsOn(this)
-            watchosArm32Test.dependsOn(this)
-            watchosArm64Test.dependsOn(this)
-            watchosSimulatorArm64Test.dependsOn(this)
-            watchosX64Test.dependsOn(this)
-            watchosX86Test.dependsOn(this)
-        }
     }
 }
 
