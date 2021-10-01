@@ -9,7 +9,11 @@ import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 
-fun Project.setupPublishing(vararg jars: Jar, createMavenFromJava: Boolean = false) {
+fun Project.setupPublishing(
+    vararg jars: Jar,
+    publishFromJava: Boolean = false,
+    publishFromJavaPlatform: Boolean = false
+) {
     configure<PublishingExtension> {
         publications {
             withType<MavenPublication> {
@@ -44,7 +48,8 @@ fun Project.setupPublishing(vararg jars: Jar, createMavenFromJava: Boolean = fal
                 }
             }
 
-            if (createMavenFromJava) create<MavenPublication>("maven") { from(components["java"]) }
+            if (publishFromJava) create<MavenPublication>("maven") { from(components["java"]) }
+            if (publishFromJavaPlatform) create<MavenPublication>("platform") { from(components["javaPlatform"]) }
         }
     }
 }

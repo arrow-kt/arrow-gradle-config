@@ -21,6 +21,6 @@ val sourcesJar by project.tasks.creating(Jar::class) {
     from((project.properties["sourceSets"] as SourceSetContainer)["main"].allSource)
 }
 
-setupPublishing(docsJar, sourcesJar, publishFromJava = true)
+setupPublishing(docsJar, sourcesJar, publishFromJavaPlatform = true)
 
 signPublications()

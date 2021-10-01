@@ -13,6 +13,7 @@ include(
     ":arrow-gradle-config-multiplatform",
     ":arrow-gradle-config-nexus",
     ":arrow-gradle-config-publish-gradle-plugin",
+    ":arrow-gradle-config-publish-java-platform",
     ":arrow-gradle-config-publish-jvm",
     ":arrow-gradle-config-publish-multiplatform",
 )
