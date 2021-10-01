@@ -5,8 +5,8 @@ plugins {
 }
 
 pluginBundle {
-    website = property("pom.smc.url").toString()
-    vcsUrl = property("pom.smc.connection").toString()
+    website = property("pom.url").toString()
+    vcsUrl = property("pom.smc.url").toString()
 }
 
 val docsJar by project.tasks.creating(Jar::class) {
