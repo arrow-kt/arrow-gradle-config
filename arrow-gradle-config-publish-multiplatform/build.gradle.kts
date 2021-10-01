@@ -13,6 +13,14 @@ gradlePlugin {
     }
 }
 
+pluginBundle {
+    tags =
+        listOf(
+            "Arrow",
+            "Arrow publish multiplatform",
+        )
+}
+
 setJava8Compatibility()
 
 dependencies {

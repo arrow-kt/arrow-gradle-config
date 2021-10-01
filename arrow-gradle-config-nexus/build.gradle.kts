@@ -13,6 +13,14 @@ gradlePlugin {
     }
 }
 
+pluginBundle {
+    tags =
+        listOf(
+            "Arrow",
+            "Arrow Nexus",
+        )
+}
+
 setJava8Compatibility()
 
 dependencies {

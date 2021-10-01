@@ -13,6 +13,14 @@ gradlePlugin {
     }
 }
 
+pluginBundle {
+    tags =
+        listOf(
+            "Arrow",
+            "Arrow publish JVM",
+        )
+}
+
 setJava8Compatibility()
 
 dependencies {
