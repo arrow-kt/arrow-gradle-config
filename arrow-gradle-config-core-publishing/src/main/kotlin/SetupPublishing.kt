@@ -49,7 +49,9 @@ fun Project.setupPublishing(
             }
 
             if (publishFromJava) create<MavenPublication>("maven") { from(components["java"]) }
-            if (publishFromJavaPlatform) create<MavenPublication>("platform") { from(components["javaPlatform"]) }
+            if (publishFromJavaPlatform) {
+                create<MavenPublication>("platform") { from(components["javaPlatform"]) }
+            }
         }
     }
 }

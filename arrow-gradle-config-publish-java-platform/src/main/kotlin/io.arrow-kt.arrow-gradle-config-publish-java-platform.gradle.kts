@@ -6,6 +6,8 @@ plugins {
     signing
 }
 
-setupPublishing(publishFromJavaPlatform = true)
+afterEvaluate {
+    setupPublishing(publishFromJavaPlatform = true)
+}
 
 signPublications()
