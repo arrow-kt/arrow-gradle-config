@@ -25,8 +25,6 @@ val sourcesJar by project.tasks.creating(Jar::class) {
     )
 }
 
-afterEvaluate {
-    setupPublishing(docsJar, sourcesJar, publishFromJava = true)
-}
+setupPublishing(docsJar, sourcesJar, publishFromJava = true)
 
 signPublications()
