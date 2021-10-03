@@ -11,7 +11,6 @@ val docsJar by project.tasks.creating(Jar::class) {
     group = "build"
     description = "Assembles Javadoc jar file from for publishing"
     archiveClassifier.set("javadoc")
-    dependsOn(tasks.dokkaHtml)
 }
 
 setupPublishing(docsJar)
