@@ -18,9 +18,15 @@ val sourcesJar by project.tasks.creating(Jar::class) {
     group = "build"
     description = "Assembles Sources jar file for publishing"
     archiveClassifier.set("sources")
-    from((project.properties["sourceSets"] as SourceSetContainer)["main"].allSource)
+    from(
+        (project.properties["sourceSets"] as SourceSetContainer)["main"].allSource,
+        "build/generated/source/kapt/main",
+        "build/generated/source/kaptKotlin/main",
+    )
 }
 
-setupPublishing(docsJar, sourcesJar, publishFromJava = true)
+afterEvaluate {
+    setupPublishing(docsJar, sourcesJar, publishFromJava = true)
+}
 
 signPublications()
