@@ -9,7 +9,7 @@ plugins {
 
 val publishJvmExtension = PublishJvmExtension()
 
-extensions.add("publishMultiplatform", publishJvmExtension)
+extensions.add("publishJVM", publishJvmExtension)
 
 if (publishJvmExtension.isDokkaEnabled) apply<DokkaPlugin>()
 

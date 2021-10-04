@@ -10,7 +10,7 @@ plugins {
 
 val publishGradlePluginExtension = PublishGradlePluginExtension()
 
-extensions.add("publishMultiplatform", publishGradlePluginExtension)
+extensions.add("publishGradlePlugin", publishGradlePluginExtension)
 
 if (publishGradlePluginExtension.isDokkaEnabled) apply<DokkaPlugin>()
 
