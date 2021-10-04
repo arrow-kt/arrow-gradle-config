@@ -1,1 +1,1 @@
-data class PublishMultiplatformExtension(val isDokkaEnabled: Boolean = true)
+data class PublishMultiplatformExtension(var isDokkaEnabled: Boolean = true)

@@ -1,1 +1,1 @@
-data class PublishJvmExtension(val isDokkaEnabled: Boolean = true)
+data class PublishJvmExtension(var isDokkaEnabled: Boolean = true)

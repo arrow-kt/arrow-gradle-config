@@ -1,1 +1,1 @@
-data class PublishGradlePluginExtension(val isDokkaEnabled: Boolean = true)
+data class PublishGradlePluginExtension(var isDokkaEnabled: Boolean = true)
