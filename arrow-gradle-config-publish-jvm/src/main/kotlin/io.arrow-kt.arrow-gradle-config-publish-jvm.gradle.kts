@@ -1,17 +1,23 @@
 import io.arrow.gradle.core.publishing.setupPublishing
 import io.arrow.gradle.core.publishing.signPublications
+import org.jetbrains.dokka.gradle.DokkaPlugin
 
 plugins {
     `maven-publish`
     signing
-    id("org.jetbrains.dokka")
 }
+
+val publishJvmExtension = PublishJvmExtension()
+
+extensions.add("publishMultiplatform", publishJvmExtension)
+
+if (publishJvmExtension.isDokkaEnabled) apply<DokkaPlugin>()
 
 val docsJar by project.tasks.creating(Jar::class) {
     group = "build"
     description = "Assembles Javadoc jar file from for publishing"
     archiveClassifier.set("javadoc")
-    from(tasks.dokkaJavadoc)
+    if (publishJvmExtension.isDokkaEnabled) from(tasks.named("dokkaJavadoc"))
 }
 
 val sourcesJar by project.tasks.creating(Jar::class) {
