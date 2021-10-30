@@ -49,6 +49,7 @@ fun Project.setupPublishing(
             }
 
             if (publishFromJava) create<MavenPublication>("maven") { from(components["java"]) }
+
             if (publishFromJavaPlatform) {
                 create<MavenPublication>("ArrowPlatform") { from(components["javaPlatform"]) }
             }
