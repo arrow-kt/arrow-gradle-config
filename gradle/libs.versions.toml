@@ -4,8 +4,10 @@ gradlePublish = "0.13.0"
 kotlin = "1.5.31"
 ktlint = "10.2.0"
 nexusPublish = "1.1.0"
+spotless = "5.17.1"
 
 [libraries]
+spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
 dokka-gfmPluginx = { module = "org.jetbrains.dokka:gfm-plugin", version.ref = "dokka" }
 dokka-gradlePluginx = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }

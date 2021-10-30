@@ -9,6 +9,7 @@ dependencyResolutionManagement {
 }
 
 include(
+    ":arrow-gradle-config-formatter",
     ":arrow-gradle-config-jvm",
     ":arrow-gradle-config-multiplatform",
     ":arrow-gradle-config-nexus",
