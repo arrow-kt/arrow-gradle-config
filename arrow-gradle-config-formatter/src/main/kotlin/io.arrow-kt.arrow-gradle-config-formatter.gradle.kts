@@ -17,7 +17,7 @@ configure<SpotlessExtension> {
             "**/build/**",
             "**/.gradle/**",
         )
-        ktfmt().googleStyle()
+        ktfmt()
     }
 }
 
