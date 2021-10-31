@@ -17,6 +17,7 @@ include(
     ":arrow-gradle-config-publish-java-platform",
     ":arrow-gradle-config-publish-jvm",
     ":arrow-gradle-config-publish-multiplatform",
+    ":arrow-gradle-config-versioning",
 )
 
 include(

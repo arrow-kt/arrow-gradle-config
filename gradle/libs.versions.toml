@@ -2,16 +2,16 @@
 dokka = "1.5.30"
 gradlePublish = "0.13.0"
 kotlin = "1.5.31"
-ktlint = "10.2.0"
 nexusPublish = "1.1.0"
+reckon = "0.13.0"
 spotless = "5.17.1"
 
 [libraries]
-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+ajoberstar-reckon-reckonGradle = { module = "org.ajoberstar.reckon:reckon-gradle", version.ref = "reckon" }
 dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
 dokka-gfmPluginx = { module = "org.jetbrains.dokka:gfm-plugin", version.ref = "dokka" }
 dokka-gradlePluginx = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-publishPluginx = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradlePublish" }
 gradleNexus-publishPluginx = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexusPublish" }
 kotlin-gradlePluginx = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-ktlint-gradle = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint" }
+spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }

@@ -2,7 +2,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     kotlin("multiplatform")
-    id("org.jlleitschuh.gradle.ktlint")
 }
 
 configure<KotlinMultiplatformExtension> {
