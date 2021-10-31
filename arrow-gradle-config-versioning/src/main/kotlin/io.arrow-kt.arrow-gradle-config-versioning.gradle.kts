@@ -5,6 +5,7 @@ plugins {
 }
 
 configure<ReckonExtension> {
+    scopeFromProp()
     stageFromProp("alpha", "beta", "rc", "final")
 }
 
