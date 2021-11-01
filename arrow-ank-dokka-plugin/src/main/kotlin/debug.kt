@@ -1,4 +1,4 @@
-package com.github.nomisrev.ank
+package arrow.ank
 
 import org.jetbrains.dokka.model.DModule
 import org.jetbrains.dokka.model.doc.CodeBlock

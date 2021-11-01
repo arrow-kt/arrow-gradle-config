@@ -10,7 +10,7 @@ dependencyResolutionManagement {
 }
 
 include(
-  ":arrow-gradle-config-ank-dokka-plugin",
+  ":arrow-ank-dokka-plugin",
   ":arrow-gradle-config-formatter",
   ":arrow-gradle-config-jvm",
   ":arrow-gradle-config-multiplatform",

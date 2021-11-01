@@ -1,4 +1,4 @@
-package com.github.nomisrev.ank
+package arrow.ank
 
 import java.util.concurrent.atomic.AtomicReference
 

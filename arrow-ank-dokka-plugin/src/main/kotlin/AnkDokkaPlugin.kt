@@ -1,4 +1,4 @@
-package com.github.nomisrev.ank
+package arrow.ank
 
 import arrow.fx.coroutines.parTraverse
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,4 @@
-package com.github.nomisrev.ank
+package arrow.ank
 
 // TODO Update this to use Dokka's error reporting system
 public data class CompilationException(
