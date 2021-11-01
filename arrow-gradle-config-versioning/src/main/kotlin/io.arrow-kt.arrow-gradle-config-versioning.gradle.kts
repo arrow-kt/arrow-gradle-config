@@ -1,18 +1,18 @@
 import org.ajoberstar.reckon.gradle.ReckonExtension
 
 plugins {
-    id("org.ajoberstar.reckon")
+  id("org.ajoberstar.reckon")
 }
 
 configure<ReckonExtension> {
-    scopeFromProp()
-    stageFromProp("alpha", "beta", "rc", "final")
+  scopeFromProp()
+  stageFromProp("alpha", "beta", "rc", "final")
 }
 
 File("${rootProject.buildDir}/versioning/version.txt").apply {
-    if (!exists()) {
-        parentFile.mkdirs()
-        createNewFile()
-    }
-    writeText(version.toString())
+  if (!exists()) {
+    parentFile.mkdirs()
+    createNewFile()
+  }
+  writeText(version.toString())
 }
