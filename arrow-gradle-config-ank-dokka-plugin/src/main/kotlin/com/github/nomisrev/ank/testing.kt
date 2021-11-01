@@ -45,14 +45,12 @@ class TestEnviroment {
             it.second.exceptionOrNull()?.let { t -> t.message ?: t.stackTrace }
           }"
         }
-
-      colored(
-        ANSI_RED,
+      val failed =
         """
-             |Failed: ${failures.size}/${size}
-             |$failuresOut
-            """.trimMargin()
-      )
+         |Failed: ${failures.size}/${size}
+         |$failuresOut
+        """.trimMargin()
+      error(failed)
     } else ""
   }
 

@@ -27,5 +27,3 @@ include(
 )
 
 includeBuild("build-src")
-
-include(":sample")
