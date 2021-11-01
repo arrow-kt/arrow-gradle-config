@@ -1,3 +1,5 @@
-.idea/
 .gradle/
+.idea/
 build/
+**/jsr223
+**/.DS_Store
