@@ -44,35 +44,34 @@ fun DModule.classPath(): List<URL> =
 suspend fun List<DPackage>.parTraverseCodeBlock(
   dModule: DModule,
   transform:
-  suspend (
-    module: DModule,
-    `package`: DPackage,
-    documentable: Documentable,
-    node: DocumentationNode,
-    wrapper: TagWrapper,
-    CodeBlock
-  ) -> CodeBlock?
+    suspend (
+      module: DModule,
+      `package`: DPackage,
+      documentable: Documentable,
+      node: DocumentationNode,
+      wrapper: TagWrapper,
+      CodeBlock) -> CodeBlock?
 ): List<DPackage> = parTraverse { `package` ->
   `package`.copy(
     properties =
-    `package`.properties.map { property ->
-      property.copy(
-        documentation = property.documentation.process(dModule, `package`, property, transform)
-      )
-    },
+      `package`.properties.map { property ->
+        property.copy(
+          documentation = property.documentation.process(dModule, `package`, property, transform)
+        )
+      },
     functions =
-    `package`.functions.map { function ->
-      function.copy(
-        documentation = function.documentation.process(dModule, `package`, function, transform)
-      )
-    },
+      `package`.functions.map { function ->
+        function.copy(
+          documentation = function.documentation.process(dModule, `package`, function, transform)
+        )
+      },
     classlikes = `package`.classlikes.map { it.process(dModule, `package`, transform) },
     typealiases =
-    `package`.typealiases.map { typeAlias ->
-      typeAlias.copy(
-        documentation = typeAlias.documentation.process(dModule, `package`, typeAlias, transform)
-      )
-    }
+      `package`.typealiases.map { typeAlias ->
+        typeAlias.copy(
+          documentation = typeAlias.documentation.process(dModule, `package`, typeAlias, transform)
+        )
+      }
   )
 }
 
@@ -80,14 +79,13 @@ private suspend fun DClasslike.process(
   module: DModule,
   `package`: DPackage,
   transform:
-  suspend (
-    module: DModule,
-    `package`: DPackage,
-    documentable: Documentable,
-    node: DocumentationNode,
-    wrapper: TagWrapper,
-    CodeBlock
-  ) -> CodeBlock?
+    suspend (
+      module: DModule,
+      `package`: DPackage,
+      documentable: Documentable,
+      node: DocumentationNode,
+      wrapper: TagWrapper,
+      CodeBlock) -> CodeBlock?
 ): DClasslike =
   when (this) {
     is DClass -> copy(documentation = documentation.process(module, `package`, this, transform))
@@ -103,14 +101,13 @@ private suspend fun SourceSetDependent<DocumentationNode>.process(
   `package`: DPackage,
   documentable: Documentable,
   transform:
-  suspend (
-    module: DModule,
-    `package`: DPackage,
-    documentable: Documentable,
-    node: DocumentationNode,
-    wrapper: TagWrapper,
-    code: CodeBlock
-  ) -> CodeBlock?
+    suspend (
+      module: DModule,
+      `package`: DPackage,
+      documentable: Documentable,
+      node: DocumentationNode,
+      wrapper: TagWrapper,
+      code: CodeBlock) -> CodeBlock?
 ): SourceSetDependent<DocumentationNode> = mapValues { (_, node) ->
   node.process(module, `package`, documentable, node, transform)
 }
@@ -121,51 +118,50 @@ private suspend fun DocumentationNode.process(
   documentable: Documentable,
   node: DocumentationNode,
   transform:
-  suspend (
-    module: DModule,
-    `package`: DPackage,
-    documentable: Documentable,
-    node: DocumentationNode,
-    wrapper: TagWrapper,
-    code: CodeBlock
-  ) -> CodeBlock?
+    suspend (
+      module: DModule,
+      `package`: DPackage,
+      documentable: Documentable,
+      node: DocumentationNode,
+      wrapper: TagWrapper,
+      code: CodeBlock) -> CodeBlock?
 ): DocumentationNode =
   copy(
     children =
-    children.map {
-      when (it) {
-        is See ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Param ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Throws ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Sample ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Property ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is CustomTagWrapper ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Description ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Author ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Version ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Since ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Return ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Receiver ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Constructor ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Deprecated ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
-        is Suppress ->
-          it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+      children.map {
+        when (it) {
+          is See ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Param ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Throws ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Sample ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Property ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is CustomTagWrapper ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Description ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Author ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Version ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Since ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Return ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Receiver ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Constructor ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Deprecated ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+          is Suppress ->
+            it.copy(root = it.root.process(module, `package`, documentable, node, it, transform))
+        }
       }
-    }
   )
 
 private suspend fun DocTag.process(
@@ -175,14 +171,13 @@ private suspend fun DocTag.process(
   node: DocumentationNode,
   wrapper: TagWrapper,
   transform:
-  suspend (
-    module: DModule,
-    `package`: DPackage,
-    documentable: Documentable,
-    node: DocumentationNode,
-    wrapper: TagWrapper,
-    code: CodeBlock
-  ) -> CodeBlock?
+    suspend (
+      module: DModule,
+      `package`: DPackage,
+      documentable: Documentable,
+      node: DocumentationNode,
+      wrapper: TagWrapper,
+      code: CodeBlock) -> CodeBlock?
 ): DocTag =
   when (this) {
     is CodeBlock -> transform(module, `package`, documentable, node, wrapper, this) ?: this
@@ -190,7 +185,7 @@ private suspend fun DocTag.process(
     is CustomDocTag ->
       copy(
         children =
-        children.map { it.process(module, `package`, documentable, node, wrapper, transform) }
+          children.map { it.process(module, `package`, documentable, node, wrapper, transform) }
       )
     else -> this
   }

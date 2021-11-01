@@ -25,12 +25,13 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
         .parTraverse { module ->
           Engine.engine(module.classPath()).use { engine ->
             val packages =
-              module.packages.parTraverseCodeBlock(module) { module,
-                                                             `package`,
-                                                             documentable,
-                                                             node,
-                                                             wrapper,
-                                                             codeBlock ->
+              module.packages.parTraverseCodeBlock(module) {
+                module,
+                `package`,
+                documentable,
+                node,
+                wrapper,
+                codeBlock ->
                 Snippet(module, `package`, documentable, node, wrapper, codeBlock)
                   ?.let { engine.eval(it) }
                   ?.toCodeBlock()

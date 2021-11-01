@@ -74,31 +74,31 @@ object Engine {
    */
   fun engine(classpath: List<URL>): Resource<ScriptEngine> =
     (resource {
-      val classLoader = classLoader(classpath)
+        val classLoader = classLoader(classpath)
 
-      // We need to get the original contextClassLoader which Dokka uses to run, and store it
-      // Then we need to set the contextClassloader so the engine can correctly define the
-      // compilation classpath
-      // We do this **whilst** decoupling the classLoader for the ScriptEngine with the
-      // classLoader of Dokka.
-      // This is because Dokka shadows some of the Kotlin compiler dependencies, having them mixed
-      // results in incorrect state
-      val originalClassLoader = Thread.currentThread().contextClassLoader
-      Thread.currentThread().contextClassLoader = classLoader
-      val manager = ScriptEngineManager(classLoader)
-      val engine =
-        manager.getEngineByExtension("kts").apply {
-          setBindings(createBindings(), ScriptContext.ENGINE_SCOPE)
-          eval(testPrelude) // Setup testing prelude
-        }
-      Pair(engine, originalClassLoader)
-    } release
-      { (engine, originalClassLoader) ->
-        val result = engine.eval("enviroment.encode()") // Get test enviroment results
-        if (result is String) enviroment.insert(result.decode())
-        // When we're done, we reset back to the original classLoader
-        Thread.currentThread().contextClassLoader = originalClassLoader
-      })
+        // We need to get the original contextClassLoader which Dokka uses to run, and store it
+        // Then we need to set the contextClassloader so the engine can correctly define the
+        // compilation classpath
+        // We do this **whilst** decoupling the classLoader for the ScriptEngine with the
+        // classLoader of Dokka.
+        // This is because Dokka shadows some of the Kotlin compiler dependencies, having them mixed
+        // results in incorrect state
+        val originalClassLoader = Thread.currentThread().contextClassLoader
+        Thread.currentThread().contextClassLoader = classLoader
+        val manager = ScriptEngineManager(classLoader)
+        val engine =
+          manager.getEngineByExtension("kts").apply {
+            setBindings(createBindings(), ScriptContext.ENGINE_SCOPE)
+            eval(testPrelude) // Setup testing prelude
+          }
+        Pair(engine, originalClassLoader)
+      } release
+        { (engine, originalClassLoader) ->
+          val result = engine.eval("enviroment.encode()") // Get test enviroment results
+          if (result is String) enviroment.insert(result.decode())
+          // When we're done, we reset back to the original classLoader
+          Thread.currentThread().contextClassLoader = originalClassLoader
+        })
       .map { (engine, _) -> engine }
 
   /*
@@ -151,8 +151,8 @@ public fun ScriptEngine.eval(snip: Snippet): Snippet {
           snip,
           e,
           msg =
-          "\n" +
-            """
+            "\n" +
+              """
                     | ${snip.path.prettyPrint()}
                     |
                     |```
