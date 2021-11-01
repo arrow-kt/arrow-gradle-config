@@ -39,7 +39,7 @@ jobs:
         uses: actions/setup-java@v2.3.0
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 8
 
       - name: Gradle cache
         uses: actions/cache@v2
@@ -52,7 +52,7 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: Gradle build
-        run: ./gradlew build -P"reckon.scope"="${{ github.event.inputs.scope }}" -P"reckon.stage"="${{ github.event.inputs.stage }}"
+        run: ./gradlew build  -x spotlessCheck -P"reckon.scope"="${{ github.event.inputs.scope }}" -P"reckon.stage"="${{ github.event.inputs.stage }}"
 
       - name: Stop Gradle daemons
         run: ./gradlew --stop
@@ -74,7 +74,7 @@ jobs:
         uses: actions/setup-java@v2.3.0
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 8
 
       - name: Gradle cache
         uses: actions/cache@v2
