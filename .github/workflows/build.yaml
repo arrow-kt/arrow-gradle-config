@@ -47,11 +47,11 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: Gradle build
-        run: ./gradlew build -P"reckon.stage"="snapshot" -P"reckon.scope"="patch"
+        run: ./gradlew build # -P"reckon.stage"="snapshot" -P"reckon.scope"="patch"
 
-      - name: Publish snapshot
-        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') }}
-        run: ./gradlew publishToSonatype -P"reckon.stage"="snapshot" -P"reckon.scope"="patch"
+#      - name: Publish snapshot
+#        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') }}
+#        run: ./gradlew publishToSonatype -P"reckon.stage"="snapshot" -P"reckon.scope"="patch"
 
       - name: Stop Gradle daemons
         run: ./gradlew --stop
