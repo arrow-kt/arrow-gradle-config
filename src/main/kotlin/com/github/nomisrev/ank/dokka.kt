@@ -1,6 +1,7 @@
 package com.github.nomisrev.ank
 
 import arrow.fx.coroutines.parTraverse
+import java.net.URL
 import org.jetbrains.dokka.model.DAnnotation
 import org.jetbrains.dokka.model.DClass
 import org.jetbrains.dokka.model.DClasslike
@@ -33,6 +34,8 @@ import org.jetbrains.dokka.model.doc.TagWrapper
 import org.jetbrains.dokka.model.doc.Throws
 import org.jetbrains.dokka.model.doc.Version
 
+fun DModule.classPath(): List<URL> =
+        sourceSets.firstOrNull()?.classpath.orEmpty().map { it.toURI().toURL() }
 
 /**
  * This methods gives you all info available for a detected `CodeBlock`.
@@ -41,7 +44,7 @@ import org.jetbrains.dokka.model.doc.Version
  */
 suspend fun List<DPackage>.parTraverseCodeBlock(
     dModule: DModule,
-    transform: (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, CodeBlock) -> CodeBlock?
+    transform: suspend (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, CodeBlock) -> CodeBlock?
 ): List<DPackage> = parTraverse { `package` ->
     `package`.copy(
         properties = `package`.properties.map { property ->
@@ -57,10 +60,10 @@ suspend fun List<DPackage>.parTraverseCodeBlock(
     )
 }
 
-private fun DClasslike.process(
+private suspend fun DClasslike.process(
     module: DModule,
     `package`: DPackage,
-    transform: (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, CodeBlock) -> CodeBlock?
+    transform: suspend (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, CodeBlock) -> CodeBlock?
 ): DClasslike =
     when (this) {
         is DClass -> copy(documentation = documentation.process(module, `package`, this, transform))
@@ -70,20 +73,20 @@ private fun DClasslike.process(
         is DAnnotation -> copy(documentation = documentation.process(module, `package`, this, transform))
     }
 
-private fun SourceSetDependent<DocumentationNode>.process(
+private suspend fun SourceSetDependent<DocumentationNode>.process(
     module: DModule,
     `package`: DPackage,
     documentable: Documentable,
-    transform: (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, code: CodeBlock) -> CodeBlock?
+    transform: suspend (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, code: CodeBlock) -> CodeBlock?
 ): SourceSetDependent<DocumentationNode> =
     mapValues { (_, node) -> node.process(module, `package`, documentable, node, transform) }
 
-private fun DocumentationNode.process(
+private suspend fun DocumentationNode.process(
     module: DModule,
     `package`: DPackage,
     documentable: Documentable,
     node: DocumentationNode,
-    transform: (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, code: CodeBlock) -> CodeBlock?
+    transform: suspend (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, code: CodeBlock) -> CodeBlock?
 ): DocumentationNode =
     copy(children = children.map {
         when (it) {
@@ -105,13 +108,13 @@ private fun DocumentationNode.process(
         }
     })
 
-private fun DocTag.process(
+private suspend fun DocTag.process(
     module: DModule,
     `package`: DPackage,
     documentable: Documentable,
     node: DocumentationNode,
     wrapper: TagWrapper,
-    transform: (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, code: CodeBlock) -> CodeBlock?
+    transform: suspend (module: DModule, `package`: DPackage, documentable: Documentable, node: DocumentationNode, wrapper: TagWrapper, code: CodeBlock) -> CodeBlock?
 ): DocTag =
     when (this) {
         is CodeBlock -> transform(module, `package`, documentable, node, wrapper, this) ?: this

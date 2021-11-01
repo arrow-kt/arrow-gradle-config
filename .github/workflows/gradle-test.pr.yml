@@ -6,7 +6,7 @@ jobs:
   test:
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -14,4 +14,13 @@ jobs:
         with:
           java-version: 8
       - name: "Test"
-        run: ./gradlew clean test --stacktrace
+        run: ./gradlew clean test :sample:dokkaHtml --stacktrace
+      - name: Bundle the build report
+        if: failure()
+        run: find . -type d -name 'reports' | zip -@ -r build-reports.zip
+      - name: "Make test reports available to download"
+        if: failure()
+        uses: actions/upload-artifact@v1
+        with:
+          name: error-report
+          path: build-reports.zip

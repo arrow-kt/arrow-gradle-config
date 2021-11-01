@@ -1,7 +1,6 @@
 package com.github.nomisrev.ank
 
-import arrow.core.Either
-import kotlinx.coroutines.runBlocking
+import java.util.concurrent.atomic.AtomicReference
 
 /**
  * If a user writes a snippet that returns `TestResult`,
@@ -16,12 +15,42 @@ import kotlinx.coroutines.runBlocking
  *
  * This way the user can write multiple tests in a single snippet.
  */
-data class TestResult(val result: Either<Throwable, Any?>, val name: String)
+typealias TestResult = Pair<String, Result<Any?>>
 
-operator fun String.invoke(f: suspend () -> Any?): TestResult =
-    test(this, f)
+class TestEnviroment {
+    private val buffer: AtomicReference<List<TestResult>> = AtomicReference(emptyList())
 
-fun test(name: String, f: suspend () -> Any?): TestResult =
-    runBlocking {
-        TestResult(Either.catch { f() }, name)
+    fun testReport(): String? = buffer.get()
+        ?.takeIf { it.isNotEmpty() }
+        ?.run {
+            """
+        |${colored(ANSI_PURPLE, "Ank Test Results:")}
+        |${passed()}${failed()}
+        """.trimMargin()
+        }
+
+    fun List<TestResult>.passed(): String {
+        val successes = filter { it.second.isSuccess }
+        return if (successes.isNotEmpty()) colored(ANSI_GREEN, "Passed: ${successes.size}/${size}")
+        else ""
     }
+
+    fun List<TestResult>.failed(): String {
+        val failures = filter { it.second.isFailure }
+        return if (failures.isNotEmpty()) {
+            val failures = filter { it.second.isFailure }
+            val failuresOut = failures.joinToString(separator = "\n", prefix = "  - ") {
+                "${it.first} failed with ${it.second.exceptionOrNull()?.let { t -> t.message ?: t.stackTrace }}"
+            }
+
+            colored(ANSI_RED, """
+             |Failed: ${failures.size}/${size}
+             |$failuresOut
+            """.trimMargin())
+        } else ""
+    }
+
+    fun insert(result: List<TestResult>): List<TestResult> =
+        buffer.updateAndGet { it + result }
+}
+

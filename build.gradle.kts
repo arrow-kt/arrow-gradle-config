@@ -1,11 +1,13 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.net.URI
+import java.io.ByteArrayOutputStream
 
 plugins {
     kotlin("jvm") version "1.5.0"
     id("org.jetbrains.dokka") version "1.5.0"
     `maven-publish`
     signing
+    base
 }
 
 group = "com.nomisrev"
@@ -17,6 +19,7 @@ repositories {
 }
 
 val dokkaVersion: String = "1.5.0"
+configurations { create("toCopy") }
 
 dependencies {
     compileOnly("org.jetbrains.dokka:dokka-core:$dokkaVersion")
@@ -26,27 +29,43 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1")
     implementation("io.arrow-kt:arrow-fx-coroutines:0.13.2")
 
-    runtimeOnly(kotlin("reflect"))
-    runtimeOnly(kotlin("script-runtime"))
-    runtimeOnly("org.jetbrains.kotlin:kotlin-script-runtime:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-common:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-jvm-host-unshaded:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler:1.5.0") { isTransitive = false }
-    runtimeOnly("org.jetbrains.kotlin:kotlin-scripting-compiler-impl:1.5.0") { isTransitive = false }
-
     testImplementation(kotlin("test-junit"))
     testImplementation("org.jetbrains.dokka:dokka-test-api:$dokkaVersion")
     testImplementation("org.jetbrains.dokka:dokka-base-test-utils:$dokkaVersion")
+
+    "toCopy"("org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded:1.5.21")
 }
 
 val dokkaOutputDir = "$buildDir/dokka"
 
 tasks {
+    register("downloadJS233") {
+        doLast {
+            if (!File("src/main/resources/jsr223/list").exists()) {
+                File("src/main/resources/jsr223").also { it.mkdirs() }
+
+                copy {
+                    from(configurations.getAt("toCopy")).into("src/main/resources/jsr223")
+                }
+                exec {
+                    workingDir = File("src/main/resources/jsr223")
+                    executable = "../../../../JarListScript.sh"
+                }
+            }
+        }
+    }
+
+    clean {
+        doFirst {
+            File("src/main/resources/jsr223").deleteRecursively()
+        }
+    }
+
     withType<KotlinCompile> {
         kotlinOptions.jvmTarget = "1.8"
+        dependsOn("downloadJS233")
     }
+
     dokkaHtml {
         outputDirectory.set(file(dokkaOutputDir))
     }

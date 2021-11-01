@@ -26,7 +26,11 @@ data class SnippetPath(
     val node: DocumentationNode,
     val tagWrapper: TagWrapper,
     val codeBlock: CodeBlock
-)
+) {
+    fun prettyPrint(): String = """
+        Snippet in KDoc of ${documentable.name ?: "<anonymous>"} in ${`package`.packageName} failed.
+    """.trimIndent()
+}
 
 public data class Snippet(
     val path: SnippetPath,
