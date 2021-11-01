@@ -5,10 +5,12 @@ dependencyResolutionManagement {
     repositories {
         mavenCentral()
         gradlePluginPortal()
+        mavenLocal()
     }
 }
 
 include(
+    ":arrow-gradle-config-ank-dokka-plugin",
     ":arrow-gradle-config-formatter",
     ":arrow-gradle-config-jvm",
     ":arrow-gradle-config-multiplatform",
@@ -25,3 +27,5 @@ include(
 )
 
 includeBuild("build-src")
+
+include(":sample")

@@ -1,6 +1,6 @@
 plugins {
     id("nexus")
-    id("com.javiersc.gradle.plugins.versioning") version "0.1.0-alpha.59"
+    id("io.arrow-kt.arrow-gradle-config-versioning") version "0.4.1"
 }
 
 allprojects {

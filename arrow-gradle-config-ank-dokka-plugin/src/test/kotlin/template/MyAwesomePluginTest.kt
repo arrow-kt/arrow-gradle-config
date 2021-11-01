@@ -5,11 +5,7 @@ import org.junit.Test
 
 class MyAwesomePluginTest : BaseAbstractTest() {
     private val configuration = dokkaConfiguration {
-        sourceSets {
-            sourceSet {
-                sourceRoots = listOf("src/main/kotlin")
-            }
-        }
+        sourceSets { sourceSet { sourceRoots = listOf("src/main/kotlin") } }
     }
 
     @Test
@@ -30,17 +26,17 @@ class MyAwesomePluginTest : BaseAbstractTest() {
                * ```
                */
             |data class TestingIsEasy(val reason: String)
-            """.trimIndent(), configuration
+            """.trimIndent(),
+            configuration
         ) {
-            documentablesTransformationStage = { module ->
+            documentablesTransformationStage =
+                { module ->
+                    val testedPackage = module.packages.find { it.name.startsWith("sample") }
+                    val testedClass = testedPackage?.classlikes?.find { it.name == "TestingIsEasy" }
 
-
-                val testedPackage = module.packages.find { it.name == "sample" }
-                val testedClass = testedPackage?.classlikes?.find { it.name == "TestingIsEasy" }
-
-                requireNotNull(testedPackage)
-                requireNotNull(testedClass)
-            }
+                    requireNotNull(testedPackage)
+                    requireNotNull(testedClass)
+                }
         }
     }
 }

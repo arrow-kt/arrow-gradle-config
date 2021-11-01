@@ -1,4 +1,6 @@
 [versions]
+arrow = "1.0.0"
+coroutines = "1.5.2"
 dokka = "1.5.30"
 gradlePublish = "0.13.0"
 kotlin = "1.5.31"
@@ -7,11 +9,22 @@ reckon = "0.13.0"
 spotless = "5.17.1"
 
 [libraries]
+arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrow-fxCoroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 ajoberstar-reckon-reckonGradle = { module = "org.ajoberstar.reckon:reckon-gradle", version.ref = "reckon" }
+coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 dokka-base = { module = "org.jetbrains.dokka:dokka-base", version.ref = "dokka" }
+dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" }
+dokka-testApi = { module = "org.jetbrains.dokka:dokka-test-api", version.ref = "dokka" }
+dokka-baseTestUtils = { module = "org.jetbrains.dokka:dokka-base-test-utils", version.ref = "dokka" }
 dokka-gfmPluginx = { module = "org.jetbrains.dokka:gfm-plugin", version.ref = "dokka" }
 dokka-gradlePluginx = { module = "org.jetbrains.dokka:dokka-gradle-plugin", version.ref = "dokka" }
 gradle-publishPluginx = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradlePublish" }
 gradleNexus-publishPluginx = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexusPublish" }
 kotlin-gradlePluginx = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-scriptingJsr223Unshaded = {module = "org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded", version.ref = "kotlin" }
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
+
+[plugins]
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

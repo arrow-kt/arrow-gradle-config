@@ -1,14 +1,9 @@
-import org.jetbrains.dokka.gradle.DokkaTask
 import java.net.URL
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
     kotlin("jvm")
-    id("org.jetbrains.dokka")
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
+    alias(libs.plugins.dokka)
 }
 
 dependencies {
@@ -21,7 +16,7 @@ dependencies {
     implementation("io.kotest:kotest-property:4.6.1")
     implementation("io.kotest:kotest-assertions-core:4.6.1")
 
-    dokkaHtmlPlugin("com.nomisrev:ank-dokka-plugin:1.1-SNAPSHOT")
+    dokkaHtmlPlugin("io.arrow-kt:arrow-gradle-config-ank-dokka-plugin:0.5.0-alpha.1")
 }
 
 tasks.withType<DokkaTask>().configureEach {
@@ -30,15 +25,18 @@ tasks.withType<DokkaTask>().configureEach {
         named("main") {
             moduleName.set("Dokka Gradle Example")
             sourceLink {
-                localDirectory.set(file("src/main/kotlin"))
-                remoteUrl.set(URL("https://github.com/Kotlin/dokka/tree/master/" +
-                        "examples/gradle/dokka-gradle-example/src/main/kotlin"
-                ))
+                localDirectory.set(file("$projectDir/src/main/kotlin"))
+                remoteUrl.set(
+                    URL(
+                        "https://github.com/Kotlin/dokka/tree/master/" +
+                            "examples/gradle/dokka-gradle-example/src/main/kotlin"
+                    )
+                )
                 remoteLineSuffix.set("#L")
             }
 
             // Put ourselves on the classpath of Dokka, so we can access our own sources.
-            classpath.from(file("build/libs/sample.jar"))
+            classpath.from(file("$buildDir/libs/sample-0.5.0-alpha.1.jar"))
         }
     }
 }
