@@ -109,8 +109,22 @@ object Engine {
   private fun classLoader(compilerArgs: List<URL>): URLClassLoader? =
     URLClassLoader(
       (jss233Classpath + compilerArgs).toTypedArray(),
-      null // Decouple from parent ClassLoader
+      getParentClassLoader() // Decouple from parent ClassLoader
     )
+
+  private fun getParentClassLoader(): ClassLoader? {
+    val version = System.getProperty("java.specification.version")?.toDoubleOrNull()
+    return if (version != null && version > 1.8) {
+      try {
+        ClassLoader::class.java.getMethod("getPlatformClassLoader").invoke(null) as? ClassLoader
+      } catch (e: Exception) {
+        println(e)
+        null
+      }
+    } else {
+      null
+    }
+  }
 
   private val testPrelude: String =
     """
