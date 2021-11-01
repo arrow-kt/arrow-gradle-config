@@ -1,4 +1,4 @@
-package template
+package arrow.ank
 
 import org.jetbrains.dokka.base.testApi.testRunner.BaseAbstractTest
 import org.junit.Test
