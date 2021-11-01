@@ -20,52 +20,49 @@ public const val AnkPlaygroundExtension: String = ":ank:playground:extension"
 public val fenceRegexStart = "(.*)$AnkBlock.*".toRegex()
 
 data class SnippetPath(
-    val module: DModule,
-    val `package`: DPackage,
-    val documentable: Documentable,
-    val node: DocumentationNode,
-    val tagWrapper: TagWrapper,
-    val codeBlock: CodeBlock
+  val module: DModule,
+  val `package`: DPackage,
+  val documentable: Documentable,
+  val node: DocumentationNode,
+  val tagWrapper: TagWrapper,
+  val codeBlock: CodeBlock
 ) {
-    fun prettyPrint(): String = """
+  fun prettyPrint(): String =
+    """
         Snippet in KDoc of ${documentable.name ?: "<anonymous>"} in ${`package`.packageName} failed.
     """.trimIndent()
 }
 
 public data class Snippet(
-    val path: SnippetPath,
-    val fence: String,
-    val lang: String,
-    val code: String,
-    val result: String? = null
+  val path: SnippetPath,
+  val fence: String,
+  val lang: String,
+  val code: String,
+  val result: String? = null
 ) {
-    val isSilent: Boolean = fence.contains(AnkSilentBlock)
-    val isReplace: Boolean = fence.contains(AnkReplaceBlock)
-    val isFail: Boolean = fence.contains(AnkFailBlock)
-    val isPlayground: Boolean = fence.contains(AnkPlayground)
+  val isSilent: Boolean = fence.contains(AnkSilentBlock)
+  val isReplace: Boolean = fence.contains(AnkReplaceBlock)
+  val isFail: Boolean = fence.contains(AnkFailBlock)
+  val isPlayground: Boolean = fence.contains(AnkPlayground)
 
-    fun toCodeBlock(): CodeBlock =
-        CodeBlock(
-            code.lines().flatMap { listOf(Text(it), Br) },
-            mapOf("lang" to fence)
-        )
+  fun toCodeBlock(): CodeBlock =
+    CodeBlock(code.lines().flatMap { listOf(Text(it), Br) }, mapOf("lang" to fence))
 }
 
 fun Snippet(
-    module: DModule,
-    `package`: DPackage,
-    documentable: Documentable,
-    node: DocumentationNode,
-    wrapper: TagWrapper,
-    code: CodeBlock
+  module: DModule,
+  `package`: DPackage,
+  documentable: Documentable,
+  node: DocumentationNode,
+  wrapper: TagWrapper,
+  code: CodeBlock
 ): Snippet? =
-    code.params["lang"]?.let { fence ->
-        fenceRegexStart.matchEntire(fence)?.let { match ->
-            code.asStringOrNull()?.let { rawCode ->
-                val lang = match.groupValues[1].trim()
-                val path =
-                    SnippetPath(module, `package`, documentable, node, wrapper, code)
-                Snippet(path, fence, lang, rawCode)
-            }
-        }
+  code.params["lang"]?.let { fence ->
+    fenceRegexStart.matchEntire(fence)?.let { match ->
+      code.asStringOrNull()?.let { rawCode ->
+        val lang = match.groupValues[1].trim()
+        val path = SnippetPath(module, `package`, documentable, node, wrapper, code)
+        Snippet(path, fence, lang, rawCode)
+      }
     }
+  }

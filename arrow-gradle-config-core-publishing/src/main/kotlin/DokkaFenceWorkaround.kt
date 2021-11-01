@@ -40,236 +40,220 @@ import org.jetbrains.dokka.renderers.Renderer
 import org.jetbrains.dokka.transformers.pages.PageTransformer
 
 class DokkaFenceWorkaround : DokkaPlugin() {
-    val jekyllPreprocessors: ExtensionPoint<PageTransformer> by extensionPoint()
+  val jekyllPreprocessors: ExtensionPoint<PageTransformer> by extensionPoint()
 
-    private val dokkaBase by lazy { plugin<DokkaBase>() }
-    private val gfmPlugin by lazy { plugin<GfmPlugin>() }
+  private val dokkaBase by lazy { plugin<DokkaBase>() }
+  private val gfmPlugin by lazy { plugin<GfmPlugin>() }
 
-    val renderer: Extension<Renderer, *, *> by extending {
-        (CoreExtensions.renderer providing
-            {
-                JekyllRenderer(it)
-            } override
-            plugin<GfmPlugin>().renderer)
-    }
+  val renderer: Extension<Renderer, *, *> by extending {
+    (CoreExtensions.renderer providing { JekyllRenderer(it) } override plugin<GfmPlugin>().renderer)
+  }
 
-    val comments: Extension<CommentsToContentConverter, *, *> by extending {
-        dokkaBase.commentsToContentConverter with
-            PatchedDocTagToContentConverter() override
-            dokkaBase.docTagToContentConverter
-    }
+  val comments: Extension<CommentsToContentConverter, *, *> by extending {
+    dokkaBase.commentsToContentConverter with
+      PatchedDocTagToContentConverter() override
+      dokkaBase.docTagToContentConverter
+  }
 
-    val rootCreator: Extension<PageTransformer, *, *> by extending {
-        jekyllPreprocessors with RootCreator
-    }
+  val rootCreator: Extension<PageTransformer, *, *> by extending {
+    jekyllPreprocessors with RootCreator
+  }
 
-    val briefCommentPreprocessor: Extension<PageTransformer, *, *> by extending {
-        jekyllPreprocessors with BriefCommentPreprocessor()
-    }
+  val briefCommentPreprocessor: Extension<PageTransformer, *, *> by extending {
+    jekyllPreprocessors with BriefCommentPreprocessor()
+  }
 
-    val packageListCreator: Extension<PageTransformer, *, *> by extending {
-        jekyllPreprocessors providing
-            {
-                PackageListCreator(it, RecognizedLinkFormat.DokkaJekyll)
-            } order
-            {
-                after(rootCreator)
-            }
-    }
+  val packageListCreator: Extension<PageTransformer, *, *> by extending {
+    jekyllPreprocessors providing
+      {
+        PackageListCreator(it, RecognizedLinkFormat.DokkaJekyll)
+      } order
+      {
+        after(rootCreator)
+      }
+  }
 
-    val locationProvider: Extension<LocationProviderFactory, *, *> by extending {
-        dokkaBase.locationProviderFactory providing
-            ::DokkaLocationProviderFactory override
-            listOf(gfmPlugin.locationProvider)
-    }
+  val locationProvider: Extension<LocationProviderFactory, *, *> by extending {
+    dokkaBase.locationProviderFactory providing
+      ::DokkaLocationProviderFactory override
+      listOf(gfmPlugin.locationProvider)
+  }
 }
 
 class JekyllRenderer(context: DokkaContext) : CommonmarkRenderer(context) {
 
-    override val preprocessors: List<PageTransformer> =
-        context.plugin<DokkaFenceWorkaround>().query { jekyllPreprocessors }
+  override val preprocessors: List<PageTransformer> =
+    context.plugin<DokkaFenceWorkaround>().query { jekyllPreprocessors }
 
-    private fun StringBuilder.buildNewLine() {
-        append("\n")
-    }
+  private fun StringBuilder.buildNewLine() {
+    append("\n")
+  }
 
-    private fun StringBuilder.buildParagraph() {
-        buildNewLine()
-        buildNewLine()
-    }
+  private fun StringBuilder.buildParagraph() {
+    buildNewLine()
+    buildNewLine()
+  }
 
-    override fun buildPage(
-        page: ContentPage,
-        content: (StringBuilder, ContentPage) -> Unit
-    ): String {
-        val builder = StringBuilder()
-        builder.append("---\n")
-        builder.append("title: ${page.name}\n")
-        builder.append("---\n")
-        content(builder, page)
-        return builder.toString()
-    }
+  override fun buildPage(page: ContentPage, content: (StringBuilder, ContentPage) -> Unit): String {
+    val builder = StringBuilder()
+    builder.append("---\n")
+    builder.append("title: ${page.name}\n")
+    builder.append("---\n")
+    content(builder, page)
+    return builder.toString()
+  }
 
-    override fun StringBuilder.buildDivergent(
-        node: ContentDivergentGroup,
-        pageContext: ContentPage
-    ) {
+  override fun StringBuilder.buildDivergent(node: ContentDivergentGroup, pageContext: ContentPage) {
 
-        val distinct =
-            node.groupDivergentInstances(
-                pageContext,
-                { instance, _, sourceSet ->
-                    instance.before?.let { before ->
-                        buildString { buildContentNode(before, pageContext, sourceSet) }
-                    }
-                        ?: ""
-                },
-                { instance, _, sourceSet ->
-                    instance.after?.let { after ->
-                        buildString { buildContentNode(after, pageContext, sourceSet) }
-                    }
-                        ?: ""
-                }
-            )
+    val distinct =
+      node.groupDivergentInstances(
+        pageContext,
+        { instance, _, sourceSet ->
+          instance.before?.let { before ->
+            buildString { buildContentNode(before, pageContext, sourceSet) }
+          }
+            ?: ""
+        },
+        { instance, _, sourceSet ->
+          instance.after?.let { after ->
+            buildString { buildContentNode(after, pageContext, sourceSet) }
+          }
+            ?: ""
+        }
+      )
 
-        distinct.values.forEach { entry ->
-            val (instance, sourceSets) = entry.getInstanceAndSourceSets()
+    distinct.values.forEach { entry ->
+      val (instance, sourceSets) = entry.getInstanceAndSourceSets()
 
-            buildParagraph()
-            buildSourceSetTags(sourceSets)
+      buildParagraph()
+      buildSourceSetTags(sourceSets)
+      buildNewLine()
+
+      instance.before?.let {
+        buildContentNode(
+          it,
+          pageContext,
+          sourceSets.first()
+        ) // It's workaround to render content only once
+        buildParagraph()
+      }
+
+      entry
+        .groupBy {
+          buildString { buildContentNode(it.first.divergent, pageContext, setOf(it.second)) }
+        }
+        .values
+        .forEach { innerEntry ->
+          val (innerInstance, innerSourceSets) = innerEntry.getInstanceAndSourceSets()
+          if (sourceSets.size > 1) {
+            buildSourceSetTags(innerSourceSets)
             buildNewLine()
-
-            instance.before?.let {
-                buildContentNode(
-                    it,
-                    pageContext,
-                    sourceSets.first()
-                ) // It's workaround to render content only once
-                buildParagraph()
-            }
-
-            entry
-                .groupBy {
-                    buildString {
-                        buildContentNode(it.first.divergent, pageContext, setOf(it.second))
-                    }
-                }
-                .values
-                .forEach { innerEntry ->
-                    val (innerInstance, innerSourceSets) = innerEntry.getInstanceAndSourceSets()
-                    if (sourceSets.size > 1) {
-                        buildSourceSetTags(innerSourceSets)
-                        buildNewLine()
-                    }
-                    innerInstance.divergent.build(
-                        this@buildDivergent,
-                        pageContext,
-                        setOf(innerSourceSets.first())
-                    ) // It's workaround to render content only once
-                    buildParagraph()
-                }
-
-            instance.after?.let {
-                buildContentNode(
-                    it,
-                    pageContext,
-                    sourceSets.first()
-                ) // It's workaround to render content only once
-            }
-
-            buildParagraph()
+          }
+          innerInstance.divergent.build(
+            this@buildDivergent,
+            pageContext,
+            setOf(innerSourceSets.first())
+          ) // It's workaround to render content only once
+          buildParagraph()
         }
+
+      instance.after?.let {
+        buildContentNode(
+          it,
+          pageContext,
+          sourceSets.first()
+        ) // It's workaround to render content only once
+      }
+
+      buildParagraph()
     }
+  }
 
-    private fun List<Pair<ContentDivergentInstance, DisplaySourceSet>>.getInstanceAndSourceSets() =
-        this.let { Pair(it.first().first, it.map { it.second }.toSet()) }
+  private fun List<Pair<ContentDivergentInstance, DisplaySourceSet>>.getInstanceAndSourceSets() =
+    this.let { Pair(it.first().first, it.map { it.second }.toSet()) }
 
-    override fun StringBuilder.buildPlatformDependent(
-        content: PlatformHintedContent,
-        pageContext: ContentPage,
-        sourceSetRestriction: Set<DisplaySourceSet>?
-    ) {
-        buildPlatformDependentItem(content.inner, content.sourceSets, pageContext)
+  override fun StringBuilder.buildPlatformDependent(
+    content: PlatformHintedContent,
+    pageContext: ContentPage,
+    sourceSetRestriction: Set<DisplaySourceSet>?
+  ) {
+    buildPlatformDependentItem(content.inner, content.sourceSets, pageContext)
+  }
+
+  private fun StringBuilder.buildPlatformDependentItem(
+    content: ContentNode,
+    sourceSets: Set<DisplaySourceSet>,
+    pageContext: ContentPage,
+  ) {
+    if (content is ContentGroup && content.children.firstOrNull { it is ContentTable } != null) {
+      buildContentNode(content, pageContext, sourceSets)
+    } else {
+      val distinct =
+        sourceSets
+          .map { it to buildString { buildContentNode(content, pageContext, setOf(it)) } }
+          .groupBy(Pair<DisplaySourceSet, String>::second, Pair<DisplaySourceSet, String>::first)
+
+      distinct.filter { it.key.isNotBlank() }.forEach { (text, platforms) ->
+        buildParagraph()
+        buildSourceSetTags(platforms.toSet())
+        buildNewLine()
+        append(text.trim())
+        buildParagraph()
+      }
     }
+  }
 
-    private fun StringBuilder.buildPlatformDependentItem(
-        content: ContentNode,
-        sourceSets: Set<DisplaySourceSet>,
-        pageContext: ContentPage,
-    ) {
-        if (content is ContentGroup && content.children.firstOrNull { it is ContentTable } != null
-        ) {
-            buildContentNode(content, pageContext, sourceSets)
-        } else {
-            val distinct =
-                sourceSets
-                    .map { it to buildString { buildContentNode(content, pageContext, setOf(it)) } }
-                    .groupBy(
-                        Pair<DisplaySourceSet, String>::second,
-                        Pair<DisplaySourceSet, String>::first
-                    )
+  private fun StringBuilder.buildSourceSetTags(sourceSets: Set<DisplaySourceSet>) =
+    sourceSets.forEach { append("""<span class="platform-${it.name}">${it.name}</span>""") }
 
-            distinct.filter { it.key.isNotBlank() }.forEach { (text, platforms) ->
-                buildParagraph()
-                buildSourceSetTags(platforms.toSet())
-                buildNewLine()
-                append(text.trim())
-                buildParagraph()
-            }
-        }
-    }
+  override fun StringBuilder.buildCodeBlock(code: ContentCodeBlock, pageContext: ContentPage) {
+    append("```${code.language}\n")
+    code.children.forEach { it.build(this, pageContext) }
+    append("\n```")
+  }
 
-    private fun StringBuilder.buildSourceSetTags(sourceSets: Set<DisplaySourceSet>) =
-        sourceSets.forEach { append("""<span class="platform-${it.name}">${it.name}</span>""") }
-
-    override fun StringBuilder.buildCodeBlock(code: ContentCodeBlock, pageContext: ContentPage) {
-        append("```${code.language}\n")
-        code.children.forEach { it.build(this, pageContext) }
-        append("\n```")
-    }
-
-    override fun StringBuilder.buildCodeInline(code: ContentCodeInline, pageContext: ContentPage) {
-        append('`')
-        code.children.forEach { it.build(this, pageContext) }
-        append('`')
-    }
+  override fun StringBuilder.buildCodeInline(code: ContentCodeInline, pageContext: ContentPage) {
+    append('`')
+    code.children.forEach { it.build(this, pageContext) }
+    append('`')
+  }
 }
 
 class PatchedDocTagToContentConverter : DocTagToContentConverter() {
-    override fun buildContent(
-        docTag: DocTag,
-        dci: DCI,
-        sourceSets: Set<DokkaConfiguration.DokkaSourceSet>,
-        styles: Set<Style>,
-        extra: PropertyContainer<ContentNode>
-    ): List<ContentNode> {
-        fun buildChildren(
-            docTag: DocTag,
-            newStyles: Set<Style> = emptySet(),
-            newExtras: SimpleAttr? = null
-        ) =
-            docTag.children.flatMap {
-                buildContent(
-                    it,
-                    dci,
-                    sourceSets,
-                    styles + newStyles,
-                    newExtras?.let { extra + it } ?: extra
-                )
-            }
+  override fun buildContent(
+    docTag: DocTag,
+    dci: DCI,
+    sourceSets: Set<DokkaConfiguration.DokkaSourceSet>,
+    styles: Set<Style>,
+    extra: PropertyContainer<ContentNode>
+  ): List<ContentNode> {
+    fun buildChildren(
+      docTag: DocTag,
+      newStyles: Set<Style> = emptySet(),
+      newExtras: SimpleAttr? = null
+    ) =
+      docTag.children.flatMap {
+        buildContent(
+          it,
+          dci,
+          sourceSets,
+          styles + newStyles,
+          newExtras?.let { extra + it } ?: extra
+        )
+      }
 
-        return if (docTag is CodeBlock) {
-            listOf(
-                ContentCodeBlock(
-                    buildChildren(docTag),
-                    docTag.params.getOrDefault("lang", ""),
-                    dci,
-                    sourceSets.toDisplaySourceSets(),
-                    styles
-                )
-            )
-        } else {
-            super.buildContent(docTag, dci, sourceSets, styles, extra)
-        }
+    return if (docTag is CodeBlock) {
+      listOf(
+        ContentCodeBlock(
+          buildChildren(docTag),
+          docTag.params.getOrDefault("lang", ""),
+          dci,
+          sourceSets.toDisplaySourceSets(),
+          styles
+        )
+      )
+    } else {
+      super.buildContent(docTag, dci, sourceSets, styles, extra)
     }
+  }
 }

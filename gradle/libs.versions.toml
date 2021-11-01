@@ -1,5 +1,6 @@
 [versions]
 arrow = "1.0.0"
+arrowGradleConfig = "0.4.1"
 coroutines = "1.5.2"
 dokka = "1.5.30"
 gradlePublish = "0.13.0"
@@ -22,9 +23,11 @@ dokka-gradlePluginx = { module = "org.jetbrains.dokka:dokka-gradle-plugin", vers
 gradle-publishPluginx = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradlePublish" }
 gradleNexus-publishPluginx = { module = "io.github.gradle-nexus:publish-plugin", version.ref = "nexusPublish" }
 kotlin-gradlePluginx = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-kotlin-scriptingJsr223Unshaded = {module = "org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded", version.ref = "kotlin" }
+kotlin-scriptingJsr223Unshaded = { module = "org.jetbrains.kotlin:kotlin-scripting-jsr223-unshaded", version.ref = "kotlin" }
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 
 [plugins]
+arrow-gradleConfig-formatter = { id = "io.arrow-kt.arrow-gradle-config-formatter", version.ref = "arrowGradleConfig" }
+arrow-gradleConfig-versioning = { id = "io.arrow-kt.arrow-gradle-config-versioning", version.ref = "arrowGradleConfig" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

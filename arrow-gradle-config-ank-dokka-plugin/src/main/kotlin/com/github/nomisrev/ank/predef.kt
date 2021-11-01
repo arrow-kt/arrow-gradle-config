@@ -14,11 +14,10 @@ public const val ANSI_PURPLE: String = "\u001B[35m"
 public const val ANSI_CYAN: String = "\u001B[36m"
 public const val ANSI_WHITE: String = "\u001B[37m"
 
-public fun colored(color: String, message: String): String =
-    "$color$message$ANSI_RESET"
+public fun colored(color: String, message: String): String = "$color$message$ANSI_RESET"
 
 public val AnkHeader: String =
-    """
+  """
             |      :::     ::::    ::: :::    :::
             |    :+: :+:   :+:+:   :+: :+:   :+:
             |   +:+   +:+  :+:+:+  +:+ +:+  +:+
@@ -28,13 +27,12 @@ public val AnkHeader: String =
             |  ###     ### ###    #### ###    ###
             """.trimMargin()
 
-fun CodeBlock.asStringOrNull(): String? =
-    buildString {
-        children.forEach { tag ->
-            when (tag) {
-                is Text -> append(tag.body)
-                Br -> append("\n")
-                else -> return null
-            }
-        }
+fun CodeBlock.asStringOrNull(): String? = buildString {
+  children.forEach { tag ->
+    when (tag) {
+      is Text -> append(tag.body)
+      Br -> append("\n")
+      else -> return null
     }
+  }
+}

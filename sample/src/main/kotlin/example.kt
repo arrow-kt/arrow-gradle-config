@@ -1,4 +1,3 @@
-
 /**
  * This function is documented, and Ank will check that it complies
  *
@@ -29,8 +28,8 @@ fun exampleException(): Unit = Unit
 fun exampleReplace(): Unit = Unit
 
 /**
- * This function is documented, and I have access to my classpath from docs
- * Since it's silent, it doesn't add `// Either.Right(1)` as output.
+ * This function is documented, and I have access to my classpath from docs Since it's silent, it
+ * doesn't add `// Either.Right(1)` as output.
  *
  * ```kotlin:ank:silent
  * import arrow.core.Either
@@ -41,8 +40,7 @@ fun exampleReplace(): Unit = Unit
 fun exampleDependency(): Unit = Unit
 
 /**
- * This function drops first letter of [str],
- * and here is an example + test.
+ * This function drops first letter of [str], and here is an example + test.
  *
  * ```kotlin:ank
  * import io.kotest.matchers.shouldBe
@@ -51,5 +49,4 @@ fun exampleDependency(): Unit = Unit
  * exampleTestAsDoc("") shouldBe ""
  * ```
  */
-fun exampleTestAsDoc(str: String): String =
-    str.drop(1)
+fun exampleTestAsDoc(str: String): String = str.drop(1)

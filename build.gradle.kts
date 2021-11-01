@@ -1,8 +1,9 @@
 plugins {
-    id("nexus")
-    id("io.arrow-kt.arrow-gradle-config-versioning") version "0.4.1"
+  id("nexus")
+  alias(libs.plugins.arrow.gradleConfig.formatter)
+  alias(libs.plugins.arrow.gradleConfig.versioning)
 }
 
 allprojects {
-    group = property("projects.group").toString()
+  group = property("projects.group").toString()
 }
