@@ -1,6 +1,7 @@
 package arrow.ank
 
 import arrow.fx.coroutines.parTraverse
+import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.dokka.base.DokkaBase
@@ -23,7 +24,7 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
 
       modules
         .parTraverse { module ->
-          Engine.engine(module.classPath()).use { engine ->
+          Engine.engine(ankClasspathUrls()).use { engine ->
             val packages =
               module.packages.parTraverseCodeBlock(module) {
                 module,
@@ -42,4 +43,8 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
         }
         .also { Engine.testReport()?.let(::println) }
     }
+
+  private fun ankClasspathUrls(): List<URL> =
+    ctx.configuration.pluginsClasspath.map { it.toURI().toURL() } +
+      ctx.configuration.sourceSets.flatMap { it.classpath.map { it.toURI().toURL() } }.distinct()
 }
