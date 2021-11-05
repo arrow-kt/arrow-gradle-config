@@ -1,7 +1,6 @@
 package arrow.ank
 
-import arrow.fx.coroutines.parTraverse
-import java.net.URL
+import arrow.fx.coroutines.parTraverseN
 import org.jetbrains.dokka.model.DAnnotation
 import org.jetbrains.dokka.model.DClass
 import org.jetbrains.dokka.model.DClasslike
@@ -33,6 +32,7 @@ import org.jetbrains.dokka.model.doc.Suppress
 import org.jetbrains.dokka.model.doc.TagWrapper
 import org.jetbrains.dokka.model.doc.Throws
 import org.jetbrains.dokka.model.doc.Version
+import java.net.URL
 
 fun DModule.classPath(): List<URL> =
   sourceSets.firstOrNull()?.classpath.orEmpty().map { it.toURI().toURL() }
@@ -51,7 +51,7 @@ suspend fun List<DPackage>.parTraverseCodeBlock(
       node: DocumentationNode,
       wrapper: TagWrapper,
       CodeBlock) -> CodeBlock?
-): List<DPackage> = parTraverse { `package` ->
+): List<DPackage> = parTraverseN(1) { `package` ->
   `package`.copy(
     properties =
       `package`.properties.map { property ->
