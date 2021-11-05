@@ -1,6 +1,7 @@
 package arrow.ank
 
 import arrow.fx.coroutines.parTraverseN
+import java.net.URL
 import org.jetbrains.dokka.model.DAnnotation
 import org.jetbrains.dokka.model.DClass
 import org.jetbrains.dokka.model.DClasslike
@@ -32,7 +33,6 @@ import org.jetbrains.dokka.model.doc.Suppress
 import org.jetbrains.dokka.model.doc.TagWrapper
 import org.jetbrains.dokka.model.doc.Throws
 import org.jetbrains.dokka.model.doc.Version
-import java.net.URL
 
 fun DModule.classPath(): List<URL> =
   sourceSets.firstOrNull()?.classpath.orEmpty().map { it.toURI().toURL() }
@@ -51,29 +51,31 @@ suspend fun List<DPackage>.parTraverseCodeBlock(
       node: DocumentationNode,
       wrapper: TagWrapper,
       CodeBlock) -> CodeBlock?
-): List<DPackage> = parTraverseN(1) { `package` ->
-  `package`.copy(
-    properties =
-      `package`.properties.map { property ->
-        property.copy(
-          documentation = property.documentation.process(dModule, `package`, property, transform)
-        )
-      },
-    functions =
-      `package`.functions.map { function ->
-        function.copy(
-          documentation = function.documentation.process(dModule, `package`, function, transform)
-        )
-      },
-    classlikes = `package`.classlikes.map { it.process(dModule, `package`, transform) },
-    typealiases =
-      `package`.typealiases.map { typeAlias ->
-        typeAlias.copy(
-          documentation = typeAlias.documentation.process(dModule, `package`, typeAlias, transform)
-        )
-      }
-  )
-}
+): List<DPackage> =
+  parTraverseN(1) { `package` ->
+    `package`.copy(
+      properties =
+        `package`.properties.map { property ->
+          property.copy(
+            documentation = property.documentation.process(dModule, `package`, property, transform)
+          )
+        },
+      functions =
+        `package`.functions.map { function ->
+          function.copy(
+            documentation = function.documentation.process(dModule, `package`, function, transform)
+          )
+        },
+      classlikes = `package`.classlikes.map { it.process(dModule, `package`, transform) },
+      typealiases =
+        `package`.typealiases.map { typeAlias ->
+          typeAlias.copy(
+            documentation =
+              typeAlias.documentation.process(dModule, `package`, typeAlias, transform)
+          )
+        }
+    )
+  }
 
 private suspend fun DClasslike.process(
   module: DModule,
