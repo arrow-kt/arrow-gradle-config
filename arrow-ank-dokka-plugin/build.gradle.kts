@@ -26,7 +26,6 @@ dependencies {
   jsr223Dependencies(libs.kotlin.reflect)
   jsr223Dependencies(libs.kotlin.scriptingCompiler)
 
-  jsr223Dependencies(libs.kotlin.scriptingJsr223Unshaded)
 }
 
 val dokkaOutputDir = "$buildDir/dokka"
