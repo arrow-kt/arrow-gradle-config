@@ -16,7 +16,7 @@ import javax.script.ScriptEngineManager
 import org.jetbrains.kotlin.utils.ifEmpty
 
 /** Engine which can compile & evaluate code. This [Engine] is optimised to split the */
-object Engine {
+class Engine {
 
   private val jss233Classpath: List<URL>
 
@@ -26,7 +26,7 @@ object Engine {
       "true"
     )
 
-    val loader = Engine.javaClass.classLoader
+    val loader = javaClass.classLoader
     jss233Classpath =
       loader
         .getResourceAsStream("jsr223/list")

@@ -22,8 +22,9 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
     runBlocking(Dispatchers.Default) {
       ctx.logger.warn(colored(ANSI_PURPLE, "Λnk Dokka Plugin is running"))
 
-      modules
-        .parTraverse { module ->
+      modules.parTraverse { module ->
+        val engInstance = Engine()
+        engInstance.engine(ankClasspathUrls()).use { engine ->
           val packages =
             module.packages.parTraverseCodeBlock(module) {
               module,
@@ -32,16 +33,15 @@ private class AnkCompiler(private val ctx: DokkaContext) : PreMergeDocumentableT
               node,
               wrapper,
               codeBlock ->
-              Engine.engine(ankClasspathUrls()).use { engine ->
-                Snippet(module, `package`, documentable, node, wrapper, codeBlock)
-                  ?.let { engine.eval(it) }
-                  ?.toCodeBlock()
-              }
+              Snippet(module, `package`, documentable, node, wrapper, codeBlock)
+                ?.let { engine.eval(it) }
+                ?.toCodeBlock()
             }
 
+          engInstance.testReport()?.let(::println)
           module.copy(packages = packages)
         }
-        .also { Engine.testReport()?.let(::println) }
+      }
     }
 
   private fun ankClasspathUrls(): List<URL> =
