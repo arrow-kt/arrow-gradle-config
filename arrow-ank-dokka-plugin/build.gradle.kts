@@ -21,6 +21,11 @@ dependencies {
   testImplementation(libs.dokka.testApi)
   testImplementation(libs.dokka.baseTestUtils)
 
+  jsr223Dependencies(libs.kotlin.compiler)
+  jsr223Dependencies(libs.kotlin.scriptUtil)
+  jsr223Dependencies(libs.kotlin.reflect)
+  jsr223Dependencies(libs.kotlin.scriptingCompiler)
+
   jsr223Dependencies(libs.kotlin.scriptingJsr223Unshaded)
 }
 
