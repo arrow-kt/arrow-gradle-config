@@ -3,13 +3,14 @@ package arrow.ank
 import org.jetbrains.dokka.base.testApi.testRunner.BaseAbstractTest
 import org.junit.Test
 
+
 class MyAwesomePluginTest : BaseAbstractTest() {
   private val configuration = dokkaConfiguration {
     sourceSets { sourceSet { sourceRoots = listOf("src/main/kotlin") } }
   }
 
   @Test
-  fun `my awesome plugin should find packages and classes`() {
+  fun `fails in general inlining functions with lambdas`() {
     testInline(
       """
             |/src/main/kotlin/sample/testing.kt
@@ -20,8 +21,10 @@ class MyAwesomePluginTest : BaseAbstractTest() {
                * line 3
                *
                * ```kotlin:ank
-               * test("This is a test") {
-               *   require(true == true)
+               * import arrow.core.*
+               *
+               * 1.right().flatMap {
+               *    if (it == 0) "noop".left() else it.right()
                * }
                * ```
                */
@@ -39,4 +42,5 @@ class MyAwesomePluginTest : BaseAbstractTest() {
         }
     }
   }
+
 }

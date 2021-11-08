@@ -20,7 +20,7 @@ dependencies {
   testImplementation(kotlin("test-junit"))
   testImplementation(libs.dokka.testApi)
   testImplementation(libs.dokka.baseTestUtils)
-
+  jsr223Dependencies(libs.arrow.core)
   jsr223Dependencies(libs.kotlin.scriptingJsr223Unshaded)
 }
 
