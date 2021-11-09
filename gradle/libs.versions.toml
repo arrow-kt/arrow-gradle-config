@@ -7,7 +7,7 @@ gradlePublish = "0.13.0"
 kotlin = "1.5.31"
 nexusPublish = "1.1.0"
 reckon = "0.13.0"
-spotless = "5.17.1"
+spotless = "6.0.0"
 
 [libraries]
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
