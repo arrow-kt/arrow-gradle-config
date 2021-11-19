@@ -7,28 +7,20 @@ plugins {
   signing
 }
 
-val publishJvmExtension = PublishJvmExtension()
-
-extensions.add("publishJVM", publishJvmExtension)
-
-if (publishJvmExtension.isDokkaEnabled) apply<DokkaPlugin>()
+apply<DokkaPlugin>()
 
 val docsJar by project.tasks.creating(Jar::class) {
   group = "build"
   description = "Assembles Javadoc jar file from for publishing"
   archiveClassifier.set("javadoc")
-  if (publishJvmExtension.isDokkaEnabled) from(tasks.named("dokkaJavadoc"))
+  from(tasks.named("dokkaJavadoc"))
 }
 
 val sourcesJar by project.tasks.creating(Jar::class) {
   group = "build"
   description = "Assembles Sources jar file for publishing"
   archiveClassifier.set("sources")
-  from(
-    (project.properties["sourceSets"] as SourceSetContainer)["main"].allSource,
-    "build/generated/source/kapt/main",
-    "build/generated/source/kaptKotlin/main",
-  )
+  from((project.properties["sourceSets"] as SourceSetContainer)["main"].allSource)
 }
 
 setupPublishing(docsJar, sourcesJar, publishFromJava = true)

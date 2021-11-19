@@ -1,4 +1,4 @@
-package io.arrow.gradle.core.publishing
+package io.arrow.gradle.config.dokka
 
 import org.jetbrains.dokka.CoreExtensions
 import org.jetbrains.dokka.DokkaConfiguration

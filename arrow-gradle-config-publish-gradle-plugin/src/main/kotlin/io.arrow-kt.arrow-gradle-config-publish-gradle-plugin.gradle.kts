@@ -8,17 +8,13 @@ plugins {
   signing
 }
 
-val publishGradlePluginExtension = PublishGradlePluginExtension()
-
-extensions.add("publishGradlePlugin", publishGradlePluginExtension)
-
-if (publishGradlePluginExtension.isDokkaEnabled) apply<DokkaPlugin>()
+apply<DokkaPlugin>()
 
 val docsJar by project.tasks.creating(Jar::class) {
   group = "build"
   description = "Assembles Javadoc jar file from for publishing"
   archiveClassifier.set("javadoc")
-  if (publishGradlePluginExtension.isDokkaEnabled) from(tasks.named("dokkaJavadoc"))
+ from(tasks.named("dokkaJavadoc"))
 }
 
 val sourcesJar by project.tasks.creating(Jar::class) {

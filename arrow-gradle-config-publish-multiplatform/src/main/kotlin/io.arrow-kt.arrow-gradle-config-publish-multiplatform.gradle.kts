@@ -7,11 +7,7 @@ plugins {
   signing
 }
 
-val publishMultiplatformExtension = PublishMultiplatformExtension()
-
-extensions.add("publishMultiplatform", publishMultiplatformExtension)
-
-if (publishMultiplatformExtension.isDokkaEnabled) apply<DokkaPlugin>()
+apply<DokkaPlugin>()
 
 val docsJar by project.tasks.creating(Jar::class) {
   group = "build"
