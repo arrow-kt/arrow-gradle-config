@@ -1,4 +1,5 @@
 [versions]
+android = "7.0.3"
 arrow = "1.0.1"
 arrowGradleConfig = "0.5.1"
 coroutines = "1.5.2"
@@ -10,6 +11,7 @@ reckon = "0.13.0"
 spotless = "6.0.0"
 
 [libraries]
+android = { module = "com.android.tools.build:gradle", version.ref = "android" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-fxCoroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 ajoberstar-reckon-reckonGradle = { module = "org.ajoberstar.reckon:reckon-gradle", version.ref = "reckon" }

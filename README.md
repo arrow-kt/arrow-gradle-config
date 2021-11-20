@@ -7,7 +7,7 @@ In an Arrow KMP project, just add to the plugin block:
 ```kotlin
 plugins {
     kotlin("multiplatform") version "$version"
-    id("io.arrow.gradle.kotlin.multiplatform")
+    id("io.arrow-kt.arrow-gradle-config-kotlin")
     // ...
 }
 
@@ -71,11 +71,11 @@ OSS_STAGING_PROFILE_ID=[stagingProfileId]
 
 > Remember to replace the `signing.gnupg.key` or `SIGNING_KEY` line breaks with `\n`
 
-### Publish Kotlin Multiplatform project
+### Publish projects
 
 ```kotlin
 plugins {
-    id("io.arrow-kt.arrow-gradle-config-publish-multiplatform") version "$version"
+    id("io.arrow-kt.arrow-gradle-config-publish") version "$version"
     // ...
 }
 
@@ -91,25 +91,9 @@ projects.version=[version]
 
 > Remember to replace the different properties with the real values
 
-### Publish Kotlin JVM project
+if the project is a Gradle plugin
 
 ```kotlin
-plugins {
-    id("io.arrow-kt.arrow-gradle-config-publish-jvm") version "$version"
-    // ...
-}
-
-// ...
-```
-
-### Publish Gradle plugin project
-
-```kotlin
-plugins {
-    id("io.arrow-kt.arrow-gradle-config-publish-gradle-plugin") version "$version"
-    // ...
-}
-
 gradlePlugin {
     plugins {
         named("[pluginId]") {
