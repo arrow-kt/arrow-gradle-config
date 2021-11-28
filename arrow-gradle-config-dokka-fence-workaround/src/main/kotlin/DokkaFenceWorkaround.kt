@@ -207,9 +207,9 @@ class JekyllRenderer(context: DokkaContext) : CommonmarkRenderer(context) {
     sourceSets.forEach { append("""<span class="platform-${it.name}">${it.name}</span>""") }
 
   override fun StringBuilder.buildCodeBlock(code: ContentCodeBlock, pageContext: ContentPage) {
-    append("```${code.language}\n")
+    append("\n\n```${code.language}\n")
     code.children.forEach { it.build(this, pageContext) }
-    append("\n```")
+    append("\n```\n\n")
   }
 
   override fun StringBuilder.buildCodeInline(code: ContentCodeInline, pageContext: ContentPage) {
