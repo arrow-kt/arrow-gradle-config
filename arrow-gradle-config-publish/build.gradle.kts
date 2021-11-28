@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
+
 plugins {
   `kotlin-dsl`
   id("publish-gradle-plugin")
@@ -28,4 +30,19 @@ dependencies {
   compileOnly(libs.kotlin.gradlePluginx)
   compileOnly(libs.dokka.gradlePluginx)
   implementation(libs.gradle.publishPluginx)
+}
+
+kotlin.sourceSets["main"].kotlin.srcDirs("$buildDir/generated-sources/version/kotlin")
+
+file("$buildDir/generated-sources/version/kotlin/ArrowGradleConfigVersion.kt").apply {
+  ensureParentDirsCreated()
+  createNewFile()
+  writeText(
+    """
+        |package io.arrow.gradle.config.publish
+        |
+        |val arrowGradleConfigVersion = "${project.version}" 
+        |
+    """.trimMargin()
+  )
 }
