@@ -219,9 +219,7 @@ class JekyllRenderer(context: DokkaContext) : CommonmarkRenderer(context) {
     buildNewLine()
   }
 
-  /**
-   * Copied from parent class
-   */
+  /** Copied from parent class */
   private fun decorators(styles: Set<Style>) = buildString {
     styles.forEach {
       when (it) {
