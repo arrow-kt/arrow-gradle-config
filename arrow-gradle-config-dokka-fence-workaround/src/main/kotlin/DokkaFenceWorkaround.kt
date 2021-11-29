@@ -26,10 +26,13 @@ import org.jetbrains.dokka.pages.ContentGroup
 import org.jetbrains.dokka.pages.ContentNode
 import org.jetbrains.dokka.pages.ContentPage
 import org.jetbrains.dokka.pages.ContentTable
+import org.jetbrains.dokka.pages.ContentText
 import org.jetbrains.dokka.pages.DCI
+import org.jetbrains.dokka.pages.HtmlContent
 import org.jetbrains.dokka.pages.PlatformHintedContent
 import org.jetbrains.dokka.pages.SimpleAttr
 import org.jetbrains.dokka.pages.Style
+import org.jetbrains.dokka.pages.TextStyle
 import org.jetbrains.dokka.plugability.DokkaContext
 import org.jetbrains.dokka.plugability.DokkaPlugin
 import org.jetbrains.dokka.plugability.Extension
@@ -210,6 +213,38 @@ class JekyllRenderer(context: DokkaContext) : CommonmarkRenderer(context) {
     append("\n\n```${code.language}\n")
     code.children.forEach { it.build(this, pageContext) }
     append("\n```\n\n")
+  }
+
+  override fun StringBuilder.buildLineBreak() {
+    buildNewLine()
+  }
+
+  /**
+   * Copied from parent class
+   */
+  private fun decorators(styles: Set<Style>) = buildString {
+    styles.forEach {
+      when (it) {
+        TextStyle.Bold -> append("**")
+        TextStyle.Italic -> append("*")
+        TextStyle.Strong -> append("**")
+        TextStyle.Strikethrough -> append("~~")
+        else -> Unit
+      }
+    }
+  }
+
+  override fun StringBuilder.buildText(textNode: ContentText) {
+    if (textNode.extra[HtmlContent] != null) {
+      append(textNode.text)
+    } else if (textNode.text.isNotBlank()) {
+      val decorators = decorators(textNode.style)
+      append(textNode.text.takeWhile { it == ' ' })
+      append(decorators)
+      append(textNode.text.trim())
+      append(decorators.reversed())
+      append(textNode.text.takeLastWhile { it == ' ' })
+    }
   }
 
   override fun StringBuilder.buildCodeInline(code: ContentCodeInline, pageContext: ContentPage) {
