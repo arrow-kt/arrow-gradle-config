@@ -21,8 +21,6 @@ pluginBundle {
     )
 }
 
-setJava8Compatibility()
-
 dependencies {
-  compileOnly(libs.kotlin.gradlePluginx)
+  compileOnly(libs.kotlin.gradlePlugin)
 }

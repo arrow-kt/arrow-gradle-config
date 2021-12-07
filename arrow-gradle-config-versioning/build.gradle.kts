@@ -21,9 +21,7 @@ pluginBundle {
     )
 }
 
-setJava8Compatibility()
-
 dependencies {
-  api(libs.ajoberstar.reckon.reckonGradle)
-  implementation(libs.gradle.publishPluginx)
+  api(libs.javiersc.semver.semverGradlePlugin)
+  implementation(libs.gradle.publishPlugin)
 }

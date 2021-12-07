@@ -23,13 +23,11 @@ pluginBundle {
     )
 }
 
-setJava8Compatibility()
-
 dependencies {
   compileOnly(libs.android)
-  compileOnly(libs.kotlin.gradlePluginx)
-  compileOnly(libs.dokka.gradlePluginx)
-  implementation(libs.gradle.publishPluginx)
+  compileOnly(libs.kotlin.gradlePlugin)
+  compileOnly(libs.dokka.gradlePlugin)
+  implementation(libs.gradle.publishPlugin)
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("$buildDir/generated-sources/version/kotlin")

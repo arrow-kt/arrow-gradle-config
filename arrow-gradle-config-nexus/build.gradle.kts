@@ -21,8 +21,6 @@ pluginBundle {
     )
 }
 
-setJava8Compatibility()
-
 dependencies {
-  implementation(libs.gradleNexus.publishPluginx)
+  implementation(libs.gradleNexus.publishPlugin)
 }
