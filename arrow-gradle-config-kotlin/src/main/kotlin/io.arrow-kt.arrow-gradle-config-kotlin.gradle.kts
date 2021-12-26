@@ -58,8 +58,6 @@ if (isKotlinMultiplatform) {
     watchosX64()
     watchosX86()
 
-    targets.all { compilations.all { kotlinOptions { verbose = true } } }
-
     sourceSets {
       val commonMain by getting
       val mingwX64Main by getting
@@ -100,10 +98,6 @@ if (isKotlinMultiplatform) {
       }
     }
   }
-}
-
-if (isKotlinJvm) {
-  configurations.all { resolutionStrategy.cacheChangingModulesFor(0, "seconds") }
 }
 
 internal val Project.isKotlinJvm: Boolean
