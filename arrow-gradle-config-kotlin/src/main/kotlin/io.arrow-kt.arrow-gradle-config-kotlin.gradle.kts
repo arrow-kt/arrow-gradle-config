@@ -58,8 +58,6 @@ if (isKotlinMultiplatform) {
     watchosX64()
     watchosX86()
 
-    targets.all { compilations.all { kotlinOptions { verbose = true } } }
-
     sourceSets {
       val commonMain by getting
       val mingwX64Main by getting
