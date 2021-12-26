@@ -100,6 +100,10 @@ if (isKotlinMultiplatform) {
   }
 }
 
+if (isKotlinJvm) {
+  configurations.all { resolutionStrategy.cacheChangingModulesFor(0, "seconds") }
+}
+
 internal val Project.isKotlinJvm: Boolean
   get() = pluginManager.hasPlugin("org.jetbrains.kotlin.jvm")
 
