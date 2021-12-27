@@ -12,8 +12,8 @@ configure<NexusPublishExtension> {
       stagingProfileId.set(
         "${properties["oss.stagingProfileId"] ?: System.getenv("OSS_STAGING_PROFILE_ID")}",
       )
-      repositoryRelease?.let { nexusUrl.set(uri(it)) }
-      repositorySnapshot?.let { snapshotRepositoryUrl.set(uri(it)) }
+      nexusRepositoryRelease?.let { nexusUrl.set(uri(it)) }
+      nexusRepositorySnapshot?.let { snapshotRepositoryUrl.set(uri(it)) }
     }
   }
 }
@@ -21,8 +21,8 @@ configure<NexusPublishExtension> {
 fun Project.getVariableOrNull(propertyName: String, environmentVariableName: String): String? =
   project.properties[propertyName]?.toString() ?: System.getenv(environmentVariableName)
 
-val Project.repositorySnapshot: String?
-  get() = getVariableOrNull("repository.snapshot", "REPOSITORY_SNAPSHOT")
+val Project.nexusRepositorySnapshot: String?
+  get() = getVariableOrNull("nexus.repository.snapshot", "NEXUS_REPOSITORY_SNAPSHOT")
 
-val Project.repositoryRelease: String?
-  get() = getVariableOrNull("repository.release", "REPOSITORY_RELEASE")
+val Project.nexusRepositoryRelease: String?
+  get() = getVariableOrNull("nexus.repository.release", "NEXUS_REPOSITORY_RELEASE")
