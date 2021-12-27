@@ -16,7 +16,7 @@ internal val Project.docsJar: Jar
       group = "build"
       description = "Assembles Javadoc jar file from for publishing"
       archiveClassifier.set("javadoc")
-      tasks.findByName("dokkaJavadoc")?.let { dokkaJavadoc -> from(dokkaJavadoc) }
+      tasks.findByName("dokkaHtml")?.let { dokkaHtml -> from(dokkaHtml) }
     }
 
 internal val Project.sourcesJar: Jar
