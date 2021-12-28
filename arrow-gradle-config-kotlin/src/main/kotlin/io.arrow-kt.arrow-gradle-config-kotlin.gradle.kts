@@ -4,8 +4,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = property("projects.group").toString()
 
-version = property("projects.version").toString()
-
 tasks {
   withType<Test>() {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
