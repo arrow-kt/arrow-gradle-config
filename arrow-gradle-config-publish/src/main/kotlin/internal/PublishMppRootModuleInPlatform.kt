@@ -14,9 +14,10 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.getByName
 
 /**
- * Publish the platform JAR and POM so that consumers who depend on this module and can't read Gradle module
- * metadata can still get the platform artifact and transitive dependencies from the POM
- * (see details in https://youtrack.jetbrains.com/issue/KT-39184#focus=streamItem-27-4115233.0-0)
+ * Publish the platform JAR and POM so that consumers who depend on this module and can't read
+ * Gradle module metadata can still get the platform artifact and transitive dependencies from the
+ * POM (see details in
+ * https://youtrack.jetbrains.com/issue/KT-39184#focus=streamItem-27-4115233.0-0)
  */
 fun Project.publishPlatformArtifactsInRootModule() {
   val lambda = { platformPublication: MavenPublication ->
@@ -54,9 +55,15 @@ fun Project.publishPlatformArtifactsInRootModule() {
           }
         }
 
-        tasks.matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }.configureEach {
-          dependsOn(tasks.findByName("generatePomFileFor${platformPublication.name.capitalize()}Publication"))
-        }
+        tasks
+          .matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }
+          .configureEach {
+            dependsOn(
+              tasks.findByName(
+                "generatePomFileFor${platformPublication.name.capitalize()}Publication"
+              )
+            )
+          }
       }
     }
   }
