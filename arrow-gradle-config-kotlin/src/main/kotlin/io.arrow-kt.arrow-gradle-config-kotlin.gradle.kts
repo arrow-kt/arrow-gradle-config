@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = property("projects.group").toString()
 
 tasks {
-  withType<Test>() {
+  withType<Test> {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     useJUnitPlatform()
     testLogging {
@@ -13,7 +13,7 @@ tasks {
       setEvents(listOf("passed", "skipped", "failed", "standardOut", "standardError"))
     }
   }
-  withType<KotlinCompile>() {
+  withType<KotlinCompile> {
     kotlinOptions {
       freeCompilerArgs = freeCompilerArgs + listOf("-Xskip-runtime-version-check")
       jvmTarget = "1.8"
