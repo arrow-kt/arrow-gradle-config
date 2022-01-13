@@ -21,54 +21,55 @@ import org.gradle.kotlin.dsl.getByName
  */
 fun Project.publishPlatformArtifactsInRootModule() {
   fun publishPlatformArtifactsInRootModule(platformPublication: MavenPublication): Unit =
-    afterEvaluate {
-      var platformXml: XmlProvider? = null
-      platformPublication.pom.withXml { platformXml = this }
+      afterEvaluate {
+    var platformXml: XmlProvider? = null
+    platformPublication.pom.withXml { platformXml = this }
 
-      val publishingExtension: PublishingExtension? = extensions.findByType()
-      if (publishingExtension == null) {
-        errorMessage("`maven-publish` plugin is not being applied")
-      } else {
-        configure<PublishingExtension> {
-          publications.getByName<MavenPublication>("kotlinMultiplatform") {
-            artifactId = project.name
-            pom.withXml {
-              val root = asNode()
-              // Remove the original content and add the content from the platform POM:
-              root.children().toList().forEach { root.remove(it as Node) }
-              platformXml!!.asNode().children().forEach { root.append(it as Node) }
+    val publishingExtension: PublishingExtension? = extensions.findByType()
+    if (publishingExtension == null) {
+      errorMessage("`maven-publish` plugin is not being applied")
+    } else {
+      configure<PublishingExtension> {
+        publications.getByName<MavenPublication>("kotlinMultiplatform") {
+          artifactId = project.name
+          pom.withXml {
+            val root = asNode()
+            // Remove the original content and add the content from the platform POM:
+            root.children().toList().forEach { root.remove(it as Node) }
+            platformXml!!.asNode().children().forEach { root.append(it as Node) }
 
-              // Adjust the self artifact ID, as it should match the root module's coordinates:
-              ((root.get("artifactId") as NodeList)[0] as Node).setValue(artifactId)
+            // Adjust the self artifact ID, as it should match the root module's coordinates:
+            ((root.get("artifactId") as NodeList)[0] as Node).setValue(artifactId)
 
-              // Set packaging to POM to indicate that there's no artifact:
-              root.appendNode("packaging", "pom")
-              // Remove original platform dependencies, add single dependency on the platform module
-              val dependencies = (root.get("dependencies") as NodeList)[0] as Node
-              dependencies.children().toList().forEach { dependencies.remove(it as Node) }
+            // Set packaging to POM to indicate that there's no artifact:
+            root.appendNode("packaging", "pom")
+            // Remove original platform dependencies, add single dependency on the platform module
+            val dependencies = (root.get("dependencies") as NodeList)[0] as Node
+            dependencies.children().toList().forEach { dependencies.remove(it as Node) }
 
-              val singleDependency = dependencies.appendNode("dependency")
-              singleDependency.appendNode("groupId", platformPublication.groupId)
-              singleDependency.appendNode("artifactId", platformPublication.artifactId)
-              singleDependency.appendNode("version", platformPublication.version)
-              singleDependency.appendNode("scope", "compile")
-            }
-            // the root mpp module ID has no suffix, but for compatibility with the consumers who can't read Gradle module metadata, we publish the JVM artifacts in it
-            publishPlatformArtifactsInRootModule(publications.getByName<MavenPublication>("jvm"))
+            val singleDependency = dependencies.appendNode("dependency")
+            singleDependency.appendNode("groupId", platformPublication.groupId)
+            singleDependency.appendNode("artifactId", platformPublication.artifactId)
+            singleDependency.appendNode("version", platformPublication.version)
+            singleDependency.appendNode("scope", "compile")
           }
+          // the root mpp module ID has no suffix, but for compatibility with the consumers who
+          // can't read Gradle module metadata, we publish the JVM artifacts in it
+          publishPlatformArtifactsInRootModule(publications.getByName<MavenPublication>("jvm"))
         }
-
-        tasks
-          .matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }
-          .configureEach {
-            dependsOn(
-              tasks.findByName(
-                "generatePomFileFor${platformPublication.name.capitalize()}Publication"
-              )
-            )
-          }
       }
+
+      tasks
+        .matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }
+        .configureEach {
+          dependsOn(
+            tasks.findByName(
+              "generatePomFileFor${platformPublication.name.capitalize()}Publication"
+            )
+          )
+        }
     }
+  }
 
   extra.set("publishPlatformArtifactsInRootModule", ::publishPlatformArtifactsInRootModule)
 }
