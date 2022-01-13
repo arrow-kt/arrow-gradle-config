@@ -20,7 +20,7 @@ import org.gradle.kotlin.dsl.getByName
  * https://youtrack.jetbrains.com/issue/KT-39184#focus=streamItem-27-4115233.0-0)
  */
 fun Project.publishPlatformArtifactsInRootModule() {
-  val lambda = { platformPublication: MavenPublication ->
+  fun publishPlatformArtifactsInRootModule(platformPublication: MavenPublication): Unit =
     afterEvaluate {
       var platformXml: XmlProvider? = null
       platformPublication.pom.withXml { platformXml = this }
@@ -31,6 +31,7 @@ fun Project.publishPlatformArtifactsInRootModule() {
       } else {
         configure<PublishingExtension> {
           publications.getByName<MavenPublication>("kotlinMultiplatform") {
+            artifactId = project.name
             pom.withXml {
               val root = asNode()
               // Remove the original content and add the content from the platform POM:
@@ -52,6 +53,8 @@ fun Project.publishPlatformArtifactsInRootModule() {
               singleDependency.appendNode("version", platformPublication.version)
               singleDependency.appendNode("scope", "compile")
             }
+            // the root mpp module ID has no suffix, but for compatibility with the consumers who can't read Gradle module metadata, we publish the JVM artifacts in it
+            publishPlatformArtifactsInRootModule(publications.getByName<MavenPublication>("jvm"))
           }
         }
 
@@ -66,7 +69,6 @@ fun Project.publishPlatformArtifactsInRootModule() {
           }
       }
     }
-  }
 
-  extra.set("publishPlatformArtifactsInRootModule", lambda)
+  extra.set("publishPlatformArtifactsInRootModule", ::publishPlatformArtifactsInRootModule)
 }
