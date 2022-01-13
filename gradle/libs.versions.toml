@@ -8,7 +8,7 @@ gradlePublish = "0.19.0"
 javierscSemverGradlePlugin = "0.1.0-alpha.10"
 kotlin = "1.6.10"
 nexusPublish = "1.1.0"
-spotless = "6.1.2"
+spotless = "6.2.0"
 
 [libraries]
 android = { module = "com.android.tools.build:gradle", version.ref = "android" }
