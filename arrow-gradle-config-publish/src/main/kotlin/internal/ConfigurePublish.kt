@@ -47,7 +47,9 @@ internal fun Project.configurePublish() {
       }
       isKotlinMultiplatform -> {
         configurePublishing(
-          artifacts = listOf(docsJar),
+          // dokkaJavadoc is not supported for multiplatform projects
+          // see https://github.com/Kotlin/dokka#using-the-maven-plugin
+          artifacts = emptyList(), // listOf(docsJar),
         )
       }
       isAndroidLibrary -> {
