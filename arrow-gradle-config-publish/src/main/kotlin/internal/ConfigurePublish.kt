@@ -90,10 +90,13 @@ fun Project.configurePublishing(
           all {
             when (name) {
               "kotlinMultiplatform" -> {
-                // the root mpp module ID has no suffix, but for compatibility with the consumers who
+                // the root mpp module ID has no suffix, but for compatibility with the consumers
+                // who
                 // can't read Gradle module metadata, we publish the JVM artifacts in it
                 artifactId = project.name
-                publishPlatformArtifactsInRootModule(publications.getByName<MavenPublication>("jvm"))
+                publishPlatformArtifactsInRootModule(
+                  publications.getByName<MavenPublication>("jvm")
+                )
               }
               "metadata", "jvm", "js" -> {
                 artifactId = "${project.name}-${name}"
