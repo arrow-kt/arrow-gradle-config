@@ -31,7 +31,6 @@ fun Project.publishPlatformArtifactsInRootModule() {
     } else {
       configure<PublishingExtension> {
         publications.getByName<MavenPublication>("kotlinMultiplatform") {
-          artifactId = project.name
           pom.withXml {
             val root = asNode()
             // Remove the original content and add the content from the platform POM:
