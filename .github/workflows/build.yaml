@@ -51,7 +51,7 @@ jobs:
 
 #      - name: Publish snapshot
 #        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') }}
-#        run: ./gradlew publishToSonatype -P"reckon.stage"="snapshot" -P"reckon.scope"="patch"
+#        run: ./gradlew publishToSonatype "-Psemver.stage=snapshot"
 
       - name: Stop Gradle daemons
         run: ./gradlew --stop

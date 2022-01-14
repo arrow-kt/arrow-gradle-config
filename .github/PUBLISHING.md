@@ -74,10 +74,10 @@
 
 ### Snapshot
 
-The version should end with `-SNAPSHOT` which is added automatically by `reckon.stage=snapshot`
+The version should end with `-SNAPSHOT` which is added automatically by `semver.stage=snapshot`
 
 ```shell
-./gradlew publishToSonatype -P"reckon.stage"="snapshot" -P"reckon.scope"="patch"
+./gradlew publishToSonatype "-Psemver.stage=snapshot"
 ```
 
 ### Release
@@ -86,7 +86,7 @@ The version should end with `-SNAPSHOT` which is added automatically by `reckon.
   the `scope` (`major`, `minor`, or `patch`):
 
 ```shell
-./gradlew reckonTagCreate -P"reckon.stage"="final" -P"reckon.scope"="patch"
+./gradlew createSemverTag "-Psemver.stage=final" "-Psemver.scope=patch"
 ```
 
 - Publish it to MavenCentral
