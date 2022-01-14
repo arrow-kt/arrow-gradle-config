@@ -11,6 +11,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.signing.SigningExtension
 
@@ -85,6 +86,20 @@ fun Project.configurePublishing(
 
         withType<MavenPublication> {
           artifacts.forEach(::artifact)
+
+          all {
+            when (name) {
+              "kotlinMultiplatform" -> {
+                // the root mpp module ID has no suffix, but for compatibility with the consumers who
+                // can't read Gradle module metadata, we publish the JVM artifacts in it
+                artifactId = project.name
+                publishPlatformArtifactsInRootModule(publications.getByName<MavenPublication>("jvm"))
+              }
+              "metadata", "jvm", "js" -> {
+                artifactId = "${project.name}-${name}"
+              }
+            }
+          }
 
           pom {
             name.set(pomName)
