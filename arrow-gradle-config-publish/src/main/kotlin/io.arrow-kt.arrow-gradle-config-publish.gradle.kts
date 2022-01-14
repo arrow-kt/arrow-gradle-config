@@ -1,7 +1,6 @@
 import io.arrow.gradle.config.publish.arrowGradleConfigVersion
 import io.arrow.gradle.config.publish.internal.configureDokka
 import io.arrow.gradle.config.publish.internal.configurePublish
-import io.arrow.gradle.config.publish.internal.publishPlatformArtifactsInRootModule
 
 plugins {
   `maven-publish`
@@ -10,7 +9,6 @@ plugins {
 }
 
 configurePublish()
-publishPlatformArtifactsInRootModule()
 configureDokka()
 
 dependencies {
