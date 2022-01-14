@@ -98,7 +98,7 @@ fun Project.configurePublishing(
                   publications.getByName<MavenPublication>("jvm")
                 )
               }
-else -> {
+              else -> {
                 artifactId = "${project.name}-${name}"
               }
             }
