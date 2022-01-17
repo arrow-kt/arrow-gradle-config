@@ -133,7 +133,7 @@ fun Project.configurePublishing(
         }
       }
     }
-    tasks.matching { it.name == "generatePomFileForKotlinMultiplatformPublication"}.configureEach {
+    tasks.matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }.configureEach {
       dependsOn(tasks["generatePomFileForJvmPublication"])
     }
   }
