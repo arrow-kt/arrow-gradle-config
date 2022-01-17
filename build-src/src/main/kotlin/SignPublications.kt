@@ -1,10 +1,16 @@
+import com.gradle.publish.PublishTask
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.named
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 
 fun Project.signPublications() {
+  tasks.publishTask.orNull?.dependsOn(tasks.signMavenPublication)
   configure<SigningExtension> {
     if (isSnapshot.not()) {
       try {
@@ -16,6 +22,12 @@ fun Project.signPublications() {
     }
   }
 }
+
+val TaskContainer.signMavenPublication: TaskProvider<Sign>
+  get() = named<Sign>("signMavenPublication")
+
+val TaskContainer.publishTask: TaskProvider<PublishTask>
+  get() = named<PublishTask>("publish")
 
 fun SigningExtension.signInMemory() {
   if (hasSigningKeyIdGradleProperty || hasSigningKeyIdEnvironmentVariable) {

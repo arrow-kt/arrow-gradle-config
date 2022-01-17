@@ -2,8 +2,13 @@
 
 package io.arrow.gradle.config.publish.internal
 
+import com.gradle.publish.PublishTask
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.named
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 
 fun SigningExtension.signPublications() {
@@ -16,6 +21,12 @@ fun SigningExtension.signPublications() {
     sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
   }
 }
+
+val TaskContainer.signMavenPublication: TaskProvider<Sign>
+  get() = named<Sign>("signMavenPublication")
+
+val TaskContainer.publishTask: TaskProvider<PublishTask>
+  get() = named<PublishTask>("publish")
 
 fun SigningExtension.signInMemory() {
   if (hasSigningKeyIdGradleProperty || hasSigningKeyIdEnvironmentVariable) {
