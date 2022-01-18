@@ -37,6 +37,8 @@ fun Project.setupPublishing(vararg jars: Jar, createMavenFromJava: Boolean = fal
           }
         }
 
+        signPublications(this)
+
         for (jar in jars) {
           artifact(jar)
         }

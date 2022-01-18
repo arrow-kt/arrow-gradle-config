@@ -19,5 +19,3 @@ project.tasks.creating(Jar::class) {
 }
 
 setupPublishing(docsJar, sourcesJar, createMavenFromJava = true)
-
-signPublications()
