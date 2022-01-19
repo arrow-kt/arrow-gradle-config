@@ -18,8 +18,7 @@ import org.gradle.kotlin.dsl.getByName
  * POM (see details in
  * https://youtrack.jetbrains.com/issue/KT-39184#focus=streamItem-27-4115233.0-0)
  */
-fun Project.publishPlatformArtifactsInRootModule(platformPublication: MavenPublication): Unit =
-    afterEvaluate {
+fun Project.publishPlatformArtifactsInRootModule(platformPublication: MavenPublication) {
   var platformXml: XmlProvider? = null
   platformPublication.pom.withXml { platformXml = this }
 
