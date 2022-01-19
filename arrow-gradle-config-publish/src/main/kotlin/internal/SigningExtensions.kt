@@ -2,7 +2,7 @@
 
 package io.arrow.gradle.config.publish.internal
 
-import org.gradle.api.DefaultTask
+import com.gradle.publish.PublishTask
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
@@ -25,8 +25,8 @@ fun SigningExtension.signPublications() {
 val TaskContainer.signMavenPublication: TaskProvider<Sign>
   get() = named<Sign>("signMavenPublication")
 
-val TaskContainer.publishTask: TaskProvider<DefaultTask>
-  get() = named<DefaultTask>("publish")
+val TaskContainer.publishTask: TaskProvider<PublishTask>
+  get() = named<PublishTask>("publish")
 
 fun SigningExtension.signInMemory() {
   if (hasSigningKeyIdGradleProperty || hasSigningKeyIdEnvironmentVariable) {
