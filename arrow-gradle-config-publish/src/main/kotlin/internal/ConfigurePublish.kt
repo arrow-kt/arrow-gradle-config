@@ -66,7 +66,6 @@ internal fun Project.configurePublish() {
         )
       else -> error("This project is not supported at this moment")
     }
-
   }
 }
 
