@@ -111,7 +111,7 @@ fun Project.configurePublishing(
             }
 
             configure<SigningExtension> {
-              signPublications(this@withType)
+              signPublications(this)
             }
 
             artifacts.forEach(::artifact)
