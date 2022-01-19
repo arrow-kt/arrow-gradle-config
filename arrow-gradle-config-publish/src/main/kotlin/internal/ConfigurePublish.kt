@@ -27,8 +27,6 @@ internal fun Project.configurePublish() {
     }
   }
 
-  tasks.publishTask.orNull?.dependsOn(tasks.signMavenPublication)
-
   afterEvaluate {
     when {
       isJavaPlatform -> {
