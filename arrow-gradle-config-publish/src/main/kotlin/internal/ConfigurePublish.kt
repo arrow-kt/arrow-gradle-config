@@ -13,6 +13,7 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.withType
+import org.gradle.plugins.signing.SigningExtension
 
 internal fun Project.configurePublish() {
   if (isGradlePlugin) {
@@ -109,7 +110,7 @@ fun Project.configurePublishing(
               }
             }
 
-            signPublications(this@withType)
+            configure<SigningExtension> { signPublications(this@withType) }
 
             artifacts.forEach(::artifact)
 

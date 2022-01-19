@@ -2,22 +2,19 @@
 
 package io.arrow.gradle.config.publish.internal
 
-import org.gradle.api.Project
-import org.gradle.api.publish.Publication
-import org.gradle.kotlin.dsl.configure
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.plugins.signing.SigningExtension
 
-internal fun Project.signPublications(publication: Publication): Unit =
-  configure<SigningExtension> {
-    if (isSnapshot.not()) {
-      try {
-        signInMemory()
-      } catch (_: Throwable) {
-        useGpgCmd()
-      }
-      sign(publication)
+fun SigningExtension.signPublications(publication: MavenPublication) {
+  if (isSnapshot.not()) {
+    try {
+      signInMemory()
+    } catch (_: Throwable) {
+      useGpgCmd()
     }
+    sign(publication)
   }
+}
 
 fun SigningExtension.signInMemory() {
   if (hasSigningKeyIdGradleProperty || hasSigningKeyIdEnvironmentVariable) {
