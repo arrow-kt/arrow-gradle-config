@@ -29,43 +29,41 @@ internal fun Project.configurePublish() {
 
   configure(SigningExtension::signPublications)
 
-  afterEvaluate {
-    when {
-      isJavaPlatform -> {
-        configurePublishing(
-          artifacts = emptyList(),
-          components = mapOf("myPlatform" to "javaPlatform"),
-        )
-      }
-      isGradlePlugin -> {
-        configurePublishing(
-          artifacts = listOf(docsJar, sourcesJar),
-        )
-      }
-      isVersionCatalog -> {
-        configurePublishing(
-          artifacts = listOf(docsJar),
-          components = mapOf("maven" to "versionCatalog"),
-        )
-      }
-      isKotlinMultiplatform -> {
-        configurePublishing(
-          artifacts = listOf(docsJar),
-        )
-      }
-      isAndroidLibrary -> {
-        configurePublishing(
-          artifacts = listOf(docsJar, sourcesJar),
-          components = mapOf("release" to "release"),
-        )
-      }
-      isKotlinJvm ->
-        configurePublishing(
-          artifacts = listOf(docsJar, sourcesJar),
-          components = mapOf("maven" to "java"),
-        )
-      else -> error("This project is not supported at this moment")
+  when {
+    isJavaPlatform -> {
+      configurePublishing(
+        artifacts = emptyList(),
+        components = mapOf("myPlatform" to "javaPlatform"),
+      )
     }
+    isGradlePlugin -> {
+      configurePublishing(
+        artifacts = listOf(docsJar, sourcesJar),
+      )
+    }
+    isVersionCatalog -> {
+      configurePublishing(
+        artifacts = listOf(docsJar),
+        components = mapOf("maven" to "versionCatalog"),
+      )
+    }
+    isKotlinMultiplatform -> {
+      configurePublishing(
+        artifacts = listOf(docsJar),
+      )
+    }
+    isAndroidLibrary -> {
+      configurePublishing(
+        artifacts = listOf(docsJar, sourcesJar),
+        components = mapOf("release" to "release"),
+      )
+    }
+    isKotlinJvm ->
+      configurePublishing(
+        artifacts = listOf(docsJar, sourcesJar),
+        components = mapOf("maven" to "java"),
+      )
+    else -> error("This project is not supported at this moment")
   }
 }
 
