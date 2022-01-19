@@ -2,19 +2,31 @@
 
 package io.arrow.gradle.config.publish.internal
 
-import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.DefaultTask
+import org.gradle.api.Task
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.named
 import org.gradle.plugins.signing.SigningExtension
 
-fun SigningExtension.signPublications(publication: MavenPublication) {
+fun SigningExtension.signPublications() {
   if (isSnapshot.not()) {
     try {
       signInMemory()
     } catch (_: Throwable) {
       useGpgCmd()
     }
-    sign(publication)
+    sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
   }
 }
+
+val TaskContainer.signTask: Task?
+  get() = findByName("signPluginMavenPublication") ?: findByName("signMavenPublication")
+
+val TaskContainer.publishTask: TaskProvider<DefaultTask>
+  get() = named<DefaultTask>("publish")
 
 fun SigningExtension.signInMemory() {
   if (hasSigningKeyIdGradleProperty || hasSigningKeyIdEnvironmentVariable) {
