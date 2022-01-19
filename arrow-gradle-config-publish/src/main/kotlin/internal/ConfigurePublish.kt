@@ -110,7 +110,9 @@ fun Project.configurePublishing(
               }
             }
 
-            configure<SigningExtension> { signPublications(this@withType) }
+            configure<SigningExtension> {
+              signPublications(this@withType)
+            }
 
             artifacts.forEach(::artifact)
 
@@ -128,6 +130,7 @@ fun Project.configurePublishing(
                 artifactId = "${project.name}-${name}"
               }
             }
+
           }
         }
       }
