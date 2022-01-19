@@ -27,7 +27,9 @@ internal fun Project.configurePublish() {
     }
   }
 
-  tasks.signTask?.let { tasks.publishTask.orNull?.dependsOn(it) }
+  tasks.signTask?.let {
+    tasks.publishTask.orNull?.dependsOn(it)
+  }
 
   afterEvaluate {
     when {
