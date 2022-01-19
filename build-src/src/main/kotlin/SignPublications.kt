@@ -1,9 +1,10 @@
 import org.gradle.api.Project
-import org.gradle.api.publish.Publication
+import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByName
 import org.gradle.plugins.signing.SigningExtension
 
-fun Project.signPublications(publication: Publication): Unit =
+fun Project.signPublications() {
   configure<SigningExtension> {
     if (isSnapshot.not()) {
       try {
@@ -11,9 +12,10 @@ fun Project.signPublications(publication: Publication): Unit =
       } catch (_: Throwable) {
         useGpgCmd()
       }
-      sign(publication)
+      sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
     }
   }
+}
 
 fun SigningExtension.signInMemory() {
   if (hasSigningKeyIdGradleProperty || hasSigningKeyIdEnvironmentVariable) {

@@ -13,6 +13,7 @@ import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.withType
+import org.gradle.plugins.signing.SigningExtension
 
 internal fun Project.configurePublish() {
   if (isGradlePlugin) {
@@ -63,6 +64,8 @@ internal fun Project.configurePublish() {
         )
       else -> error("This project is not supported at this moment")
     }
+
+    configure(SigningExtension::signPublications)
   }
 }
 
@@ -80,39 +83,11 @@ fun Project.configurePublishing(
         for ((name, component) in components) {
           create<MavenPublication>(name) { from(this@configurePublishing.components[component]) }
         }
+
         withType<MavenPublication> {
+          artifacts.forEach(::artifact)
+
           all {
-            pom {
-              name.set(pomName)
-              description.set(pomDescription)
-              url.set(pomUrl)
-
-              licenses {
-                license {
-                  name.set(pomLicenseName)
-                  name.set(pomLicenseUrl)
-                }
-              }
-
-              developers {
-                developer {
-                  id.set(pomDeveloperId)
-                  name.set(pomDeveloperName)
-                  email.set(pomDeveloperEmail)
-                }
-              }
-
-              scm {
-                url.set(pomSmcUrl)
-                connection.set(pomSmcConnection)
-                developerConnection.set(pomSmcDeveloperConnection)
-              }
-            }
-
-            signPublications(this@withType)
-
-            artifacts.forEach(::artifact)
-
             when (name) {
               "kotlinMultiplatform" -> {
                 // the root mpp module ID has no suffix, but for compatibility with the consumers
@@ -126,6 +101,33 @@ fun Project.configurePublishing(
               else -> {
                 artifactId = "${project.name}-${name}"
               }
+            }
+          }
+
+          pom {
+            name.set(pomName)
+            description.set(pomDescription)
+            url.set(pomUrl)
+
+            licenses {
+              license {
+                name.set(pomLicenseName)
+                name.set(pomLicenseUrl)
+              }
+            }
+
+            developers {
+              developer {
+                id.set(pomDeveloperId)
+                name.set(pomDeveloperName)
+                email.set(pomDeveloperEmail)
+              }
+            }
+
+            scm {
+              url.set(pomSmcUrl)
+              connection.set(pomSmcConnection)
+              developerConnection.set(pomSmcDeveloperConnection)
             }
           }
         }
