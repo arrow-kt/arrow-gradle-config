@@ -27,9 +27,7 @@ internal fun Project.configurePublish() {
     }
   }
 
-  tasks.signTask?.let {
-    tasks.publishTask.orNull?.dependsOn(it)
-  }
+  tasks.publishTask.orNull?.dependsOn(tasks.signMavenPublication)
 
   afterEvaluate {
     when {

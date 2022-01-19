@@ -3,12 +3,12 @@
 package io.arrow.gradle.config.publish.internal
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.Task
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.tasks.TaskContainer
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.named
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 
 fun SigningExtension.signPublications() {
@@ -22,8 +22,8 @@ fun SigningExtension.signPublications() {
   }
 }
 
-val TaskContainer.signTask: Task?
-  get() = findByName("signPluginMavenPublication") ?: findByName("signMavenPublication")
+val TaskContainer.signMavenPublication: TaskProvider<Sign>
+  get() = named<Sign>("signMavenPublication")
 
 val TaskContainer.publishTask: TaskProvider<DefaultTask>
   get() = named<DefaultTask>("publish")
