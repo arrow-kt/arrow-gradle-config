@@ -27,6 +27,8 @@ internal fun Project.configurePublish() {
     }
   }
 
+  configure(SigningExtension::signPublications)
+
   afterEvaluate {
     when {
       isJavaPlatform -> {
@@ -65,7 +67,6 @@ internal fun Project.configurePublish() {
       else -> error("This project is not supported at this moment")
     }
 
-    configure(SigningExtension::signPublications)
   }
 }
 
