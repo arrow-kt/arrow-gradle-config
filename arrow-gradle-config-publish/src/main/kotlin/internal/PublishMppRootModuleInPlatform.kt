@@ -55,11 +55,15 @@ fun Project.publishPlatformArtifactsInRootModule(): Unit {
           }
         }
 
-        tasks.matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }.configureEach {
-          dependsOn(
-            tasks.findByName("generatePomFileFor${platformPublication.name.capitalize()}Publication")
-          )
-        }
+        tasks
+          .matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }
+          .configureEach {
+            dependsOn(
+              tasks.findByName(
+                "generatePomFileFor${platformPublication.name.capitalize()}Publication"
+              )
+            )
+          }
       }
     }
   }
