@@ -49,6 +49,7 @@ internal fun Project.configurePublish() {
         configurePublishing(
           artifacts = listOf(docsJar),
         )
+        publishPlatformArtifactsInRootModule()
       }
       isAndroidLibrary -> {
         configurePublishing(
