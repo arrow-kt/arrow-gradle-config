@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.getByName
 import org.gradle.plugins.signing.SigningExtension
 
 fun SigningExtension.signPublications() {
-  if (isSnapshot.not()) {
+  if (shouldSign) {
     try {
       signInMemory()
     } catch (_: Throwable) {
@@ -16,6 +16,9 @@ fun SigningExtension.signPublications() {
     sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
   }
 }
+
+private val SigningExtension.shouldSign: Boolean
+  get() = !isSnapshot && !isLocal
 
 fun SigningExtension.signInMemory() {
   if (hasSigningKeyIdGradleProperty || hasSigningKeyIdEnvironmentVariable) {
@@ -27,6 +30,12 @@ fun SigningExtension.signInMemory() {
 
 val SigningExtension.isSnapshot: Boolean
   get() = project.version.toString().endsWith("-SNAPSHOT", ignoreCase = true)
+
+val SigningExtension.isLocal: Boolean
+  get() =
+    project.gradle.startParameter.taskNames.any {
+      it.contains("publishToMavenLocal", ignoreCase = true)
+    }
 
 val SigningExtension.signingKeyName: String?
   get() = project.getVariable("signing.gnupg.keyName", "SIGNING_KEY_NAME")
