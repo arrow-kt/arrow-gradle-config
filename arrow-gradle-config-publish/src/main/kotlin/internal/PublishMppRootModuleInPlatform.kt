@@ -11,16 +11,22 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.getByName
 
 internal fun Project.publishPlatformArtifactsInRootModule() {
-  val platformPublication: MavenPublication? = extensions.findByType(PublishingExtension::class.java)
-    ?.publications?.getByName<MavenPublication>("jvm")
+  val platformPublication: MavenPublication? =
+    extensions
+      .findByType(PublishingExtension::class.java)
+      ?.publications
+      ?.getByName<MavenPublication>("jvm")
   if (platformPublication != null) {
 
     lateinit var platformXml: XmlProvider
     platformPublication.pom?.withXml { platformXml = this }
 
-    extensions.findByType(PublishingExtension::class.java)
-      ?.publications?.getByName("kotlinMultiplatform")
-      ?.let { it as MavenPublication }?.run {
+    extensions
+      .findByType(PublishingExtension::class.java)
+      ?.publications
+      ?.getByName("kotlinMultiplatform")
+      ?.let { it as MavenPublication }
+      ?.run {
 
         // replace pom
         pom.withXml {
@@ -36,7 +42,8 @@ internal fun Project.publishPlatformArtifactsInRootModule() {
           // Set packaging to POM to indicate that there's no artifact:
           root.appendNode("packaging", "pom")
 
-          // Remove the original platform dependencies and add a single dependency on the platform module:
+          // Remove the original platform dependencies and add a single dependency on the platform
+          // module:
           val dependencies = (root.get("dependencies") as NodeList).get(0) as Node
           dependencies.children().toList().forEach { dependencies.remove(it as Node) }
           val singleDependency = dependencies.appendNode("dependency")
