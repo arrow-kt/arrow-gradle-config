@@ -26,7 +26,7 @@ pluginBundle {
 dependencies {
   compileOnly(libs.android)
   compileOnly(libs.kotlin.gradlePlugin)
-  compileOnly(libs.dokka.gradlePlugin)
+  implementation(libs.dokka.gradlePlugin)
   implementation(libs.gradle.publishPlugin)
 }
 
