@@ -56,20 +56,6 @@ if (isKotlinMultiplatform) {
     watchosX64()
     watchosX86()
 
-    val publicationsFromMainHost =
-      listOf(jvm(), js(), linuxX64()).map { it.name } + "kotlinMultiplatform"
-
-    configure<PublishingExtension> {
-      publications {
-        matching { it.name in publicationsFromMainHost }.all {
-          val targetPublication = this@all
-          tasks.withType<AbstractPublishToMaven>()
-            .matching { it.publication == targetPublication }
-            .configureEach { onlyIf { findProperty("RUNNER_OS") == "Linux" } }
-        }
-      }
-    }
-
     sourceSets {
       val commonMain by getting
       val mingwX64Main by getting
