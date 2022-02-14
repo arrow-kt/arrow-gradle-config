@@ -1,5 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = property("projects.group").toString()
@@ -96,14 +98,28 @@ if (isKotlinMultiplatform) {
       }
     }
   }
+
+  plugins.withType<NodeJsRootPlugin> {
+    the<NodeJsRootExtension>().nodeVersion = "16.13.0"
+  }
 }
 
 if (isKotlinJvm) {
   configurations.all { resolutionStrategy.cacheChangingModulesFor(0, "seconds") }
 }
 
+// https://youtrack.jetbrains.com/issue/KT-49109
+if (isKotlinJs) {
+  plugins.withType<NodeJsRootPlugin> {
+    the<NodeJsRootExtension>().nodeVersion = "16.13.0"
+  }
+}
+
 internal val Project.isKotlinJvm: Boolean
   get() = pluginManager.hasPlugin("org.jetbrains.kotlin.jvm")
+
+internal val Project.isKotlinJs: Boolean
+  get() = pluginManager.hasPlugin("org.jetbrains.kotlin.js")
 
 internal val Project.isKotlinMultiplatform: Boolean
   get() = pluginManager.hasPlugin("org.jetbrains.kotlin.multiplatform")
