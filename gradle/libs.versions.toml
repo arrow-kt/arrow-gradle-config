@@ -1,14 +1,14 @@
 [versions]
 android = "7.0.4"
 arrow = "1.0.1"
-arrowGradleConfig = "0.6.0"
+arrowGradleConfig = "0.10.0"
 coroutines = "1.6.0"
 dokka = "1.6.10"
-gradlePublish = "0.20.0"
+gradlePublish = "0.21.0"
 javierscSemverGradlePlugin = "0.1.0-alpha.10"
-kotlin = "1.6.10"
+kotlin = "1.6.20"
 nexusPublish = "1.1.0"
-spotless = "6.2.0"
+spotless = "6.4.1"
 
 [libraries]
 android = { module = "com.android.tools.build:gradle", version.ref = "android" }
