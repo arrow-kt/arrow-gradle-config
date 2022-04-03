@@ -36,18 +36,10 @@ jobs:
           distribution: 'zulu'
           java-version: 11
 
-      - name: Gradle cache
-        uses: actions/cache@v3
+      - name: Build and test with Gradle
+        uses: gradle/gradle-build-action@v2.1.4
         with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle.properties', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
-
-      - name: Gradle build
-        run: ./gradlew build
+          arguments: build
 
 #      - name: Publish snapshot
 #        if: ${{ (github.event_name == 'push') || (github.event_name == 'workflow_dispatch') }}
