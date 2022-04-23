@@ -95,7 +95,7 @@ fun Project.configurePublishing(
             licenses {
               license {
                 name.set(pomLicenseName)
-                name.set(pomLicenseUrl)
+                url.set(pomLicenseUrl)
               }
             }
 
