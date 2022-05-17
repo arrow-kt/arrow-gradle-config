@@ -15,7 +15,6 @@ tasks {
   }
   withType<KotlinCompile> {
     kotlinOptions {
-      freeCompilerArgs = freeCompilerArgs + listOf("-Xskip-runtime-version-check")
       jvmTarget = "1.8"
     }
     sourceCompatibility = JavaVersion.VERSION_1_8.toString()
