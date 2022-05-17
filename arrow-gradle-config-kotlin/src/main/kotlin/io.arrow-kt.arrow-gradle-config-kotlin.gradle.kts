@@ -17,8 +17,6 @@ tasks {
     kotlinOptions {
       jvmTarget = "1.8"
     }
-    sourceCompatibility = JavaVersion.VERSION_1_8.toString()
-    targetCompatibility = JavaVersion.VERSION_1_8.toString()
   }
   named("clean") { doFirst { delete("$projectDir/../../../arrow-site/docs/apidocs") } }
 }
