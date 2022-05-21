@@ -35,11 +35,8 @@ fun Project.configureDokka(): Unit =
       }
     }
   } else {
-    tasks.withType<DokkaTask>().configureEach {
-      enabled = false
-    }
+    tasks.withType<DokkaTask>().configureEach { enabled = false }
   }
-
 
 val Project.dokkaOutputDirectory: String?
   get() =
@@ -47,6 +44,4 @@ val Project.dokkaOutputDirectory: String?
       ?: System.getenv("DOKKA_OUTPUT_DIRECTORY")
 
 val Project.dokkaEnabled: Boolean
-  get() =
-    (project.properties["dokkaEnabled"]?.toString()
-      ?: "true").toBoolean()
+  get() = (project.properties["dokkaEnabled"]?.toString() ?: "true").toBoolean()
