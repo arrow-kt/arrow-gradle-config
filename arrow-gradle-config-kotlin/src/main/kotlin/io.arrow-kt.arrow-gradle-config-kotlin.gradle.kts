@@ -16,6 +16,9 @@ tasks {
   withType<KotlinCompile> {
     kotlinOptions {
       jvmTarget = "1.8"
+      configurations["runtimeElements"].attributes {
+        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
+      }
     }
   }
   named("clean") { doFirst { delete("$projectDir/../../../arrow-site/docs/apidocs") } }
