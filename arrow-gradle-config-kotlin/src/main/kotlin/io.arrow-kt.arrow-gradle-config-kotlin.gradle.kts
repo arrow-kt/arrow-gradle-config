@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 group = property("projects.group").toString()
 
 tasks {
-  withType<Test> {
+  withType<Test>().configureEach {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
     useJUnitPlatform()
     testLogging {
@@ -13,17 +13,18 @@ tasks {
       setEvents(listOf("passed", "skipped", "failed", "standardOut", "standardError"))
     }
   }
-  withType<KotlinCompile> {
+
+  withType<JavaCompile>().configureEach {
+    targetCompatibility = "${JavaVersion.toVersion(8)}"
+    sourceCompatibility = "${JavaVersion.toVersion(8)}"
+  }
+
+  withType<KotlinCompile>().configureEach {
     kotlinOptions {
       jvmTarget = "1.8"
-      configurations["apiElements"].attributes {
-        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
-      }
-      configurations["runtimeElements"].attributes {
-        attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 8)
-      }
     }
   }
+
   named("clean") { doFirst { delete("$projectDir/../../../arrow-site/docs/apidocs") } }
 }
 
