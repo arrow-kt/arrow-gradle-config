@@ -54,8 +54,10 @@ internal fun Project.publishPlatformArtifactsInRootModule() {
         }
       }
 
-    tasks.matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }.configureEach {
-      dependsOn("generatePomFileFor${platformPublication.name.capitalize()}Publication")
-    }
+    tasks
+      .matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }
+      .configureEach {
+        dependsOn("generatePomFileFor${platformPublication.name.capitalize()}Publication")
+      }
   }
 }

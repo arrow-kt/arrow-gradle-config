@@ -196,13 +196,15 @@ class JekyllRenderer(context: DokkaContext) : CommonmarkRenderer(context) {
           .map { it to buildString { buildContentNode(content, pageContext, setOf(it)) } }
           .groupBy(Pair<DisplaySourceSet, String>::second, Pair<DisplaySourceSet, String>::first)
 
-      distinct.filter { it.key.isNotBlank() }.forEach { (text, platforms) ->
-        buildParagraph()
-        buildSourceSetTags(platforms.toSet())
-        buildNewLine()
-        append(text.trim())
-        buildParagraph()
-      }
+      distinct
+        .filter { it.key.isNotBlank() }
+        .forEach { (text, platforms) ->
+          buildParagraph()
+          buildSourceSetTags(platforms.toSet())
+          buildNewLine()
+          append(text.trim())
+          buildParagraph()
+        }
     }
   }
 
