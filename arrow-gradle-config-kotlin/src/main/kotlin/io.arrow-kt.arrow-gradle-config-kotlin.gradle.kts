@@ -66,6 +66,10 @@ if (isKotlinMultiplatform) {
     androidNativeX64()
     mingwX64()
     watchosDeviceArm64()
+    
+    // to be deprecated
+    iosArm32Main()
+    watchosX86()
 
     sourceSets {
       val commonMain by getting
@@ -89,6 +93,8 @@ if (isKotlinMultiplatform) {
       val androidNativeX64Main by getting
       val mingwX64Main by getting
       val watchosDeviceArm64Main by getting
+      val iosArm32Main by getting
+      val watchosX86Main by getting
 
       create("nativeMain") {
         dependsOn(commonMain)
@@ -112,6 +118,8 @@ if (isKotlinMultiplatform) {
         androidNativeX64Main.dependsOn(this)
         mingwX64Main.dependsOn(this)
         watchosDeviceArm64Main.dependsOn(this)
+        iosArm32Main.dependsOn(this)
+        watchosX86Main.dependsOn(this)
       }
     }
   }
