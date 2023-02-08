@@ -68,7 +68,7 @@ if (isKotlinMultiplatform) {
     watchosDeviceArm64()
     
     // to be deprecated
-    iosArm32Main()
+    iosArm32()
     watchosX86()
 
     sourceSets {
