@@ -25,3 +25,9 @@ dependencies {
   compileOnly(libs.kotlin.gradlePlugin)
   implementation(libs.spotless)
 }
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(11))
+  }
+}

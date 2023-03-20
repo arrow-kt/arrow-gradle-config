@@ -14,21 +14,18 @@ tasks {
     }
   }
 
-  withType<JavaCompile>().configureEach {
-    targetCompatibility = "${JavaVersion.toVersion(8)}"
-    sourceCompatibility = "${JavaVersion.toVersion(8)}"
-  }
-
-  withType<KotlinCompile>().configureEach {
-    kotlinOptions {
-      jvmTarget = "1.8"
-    }
-  }
-
   named("clean") { doFirst { delete("$projectDir/../../../arrow-site/docs/apidocs") } }
 }
 
-configure<KotlinProjectExtension> { explicitApi() }
+configure<KotlinProjectExtension> {
+  explicitApi()
+}
+
+configure<JavaPluginExtension> {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
+}
 
 if (isKotlinMultiplatform) {
   configure<KotlinMultiplatformExtension> {

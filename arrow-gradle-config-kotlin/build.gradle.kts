@@ -24,3 +24,9 @@ pluginBundle {
 dependencies {
   compileOnly(libs.kotlin.gradlePlugin)
 }
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
+}

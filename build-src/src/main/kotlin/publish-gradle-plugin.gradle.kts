@@ -1,12 +1,12 @@
 plugins {
-  `maven-publish`
+  // `maven-publish`
   id("com.gradle.plugin-publish")
   signing
 }
 
-pluginBundle {
-  website = property("pom.url").toString()
-  vcsUrl = property("pom.smc.url").toString()
+gradlePlugin {
+  website.set(property("pom.url").toString())
+  vcsUrl.set(property("pom.smc.url").toString())
 }
 
 val docsJar by project.tasks.creating(Jar::class) {

@@ -25,3 +25,9 @@ dependencies {
   api(libs.javiersc.semver.semverGradlePlugin)
   implementation(libs.gradle.publishPlugin)
 }
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
+}

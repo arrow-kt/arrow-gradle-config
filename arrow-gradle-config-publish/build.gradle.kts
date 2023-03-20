@@ -24,7 +24,7 @@ pluginBundle {
 }
 
 dependencies {
-  compileOnly(libs.android)
+  // compileOnly(libs.android)
   compileOnly(libs.kotlin.gradlePlugin)
   implementation(libs.dokka.gradlePlugin)
   implementation(libs.gradle.publishPlugin)
@@ -43,4 +43,10 @@ file("$buildDir/generated-sources/version/kotlin/ArrowGradleConfigVersion.kt").a
         |
     """.trimMargin()
   )
+}
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
 }

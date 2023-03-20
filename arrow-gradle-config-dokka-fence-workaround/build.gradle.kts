@@ -9,3 +9,9 @@ dependencies {
   compileOnly(libs.dokka.core)
   compileOnly(libs.dokka.gfmPlugin)
 }
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
+}
