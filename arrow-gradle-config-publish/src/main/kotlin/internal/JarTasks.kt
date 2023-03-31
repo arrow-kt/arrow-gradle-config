@@ -2,7 +2,6 @@
 
 package io.arrow.gradle.config.publish.internal
 
-import com.android.build.gradle.LibraryExtension
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
@@ -36,6 +35,7 @@ internal val Project.sourcesJar: Jar
           isKotlinJvm || isGradlePlugin -> {
             (project.properties["sourceSets"] as SourceSetContainer)["main"].allSource
           }
+          /*
           isAndroidLibrary -> {
             (project.extensions.getByName("android") as LibraryExtension)
               .sourceSets
@@ -44,6 +44,7 @@ internal val Project.sourcesJar: Jar
               .java
               .srcDirs
           }
+          */
           else -> emptySet()
         }
       if (sources.toList().isNotEmpty()) from(sources)

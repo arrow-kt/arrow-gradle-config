@@ -24,3 +24,9 @@ pluginBundle {
 dependencies {
   implementation(libs.gradleNexus.publishPlugin)
 }
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
+}

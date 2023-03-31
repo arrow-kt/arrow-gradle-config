@@ -35,8 +35,10 @@ import org.jetbrains.dokka.pages.Style
 import org.jetbrains.dokka.pages.TextStyle
 import org.jetbrains.dokka.plugability.DokkaContext
 import org.jetbrains.dokka.plugability.DokkaPlugin
+import org.jetbrains.dokka.plugability.DokkaPluginApiPreview
 import org.jetbrains.dokka.plugability.Extension
 import org.jetbrains.dokka.plugability.ExtensionPoint
+import org.jetbrains.dokka.plugability.PluginApiPreviewAcknowledgement
 import org.jetbrains.dokka.plugability.plugin
 import org.jetbrains.dokka.plugability.query
 import org.jetbrains.dokka.renderers.Renderer
@@ -81,6 +83,10 @@ class DokkaFenceWorkaround : DokkaPlugin() {
       ::DokkaLocationProviderFactory override
       listOf(gfmPlugin.locationProvider)
   }
+
+  @OptIn(DokkaPluginApiPreview::class)
+  override fun pluginApiPreviewAcknowledgement(): PluginApiPreviewAcknowledgement =
+    PluginApiPreviewAcknowledgement
 }
 
 class JekyllRenderer(context: DokkaContext) : CommonmarkRenderer(context) {

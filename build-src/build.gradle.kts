@@ -17,3 +17,9 @@ dependencies {
   implementation(libs.gradleNexus.publishPlugin)
   implementation(libs.kotlin.gradlePlugin)
 }
+
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(8))
+  }
+}
