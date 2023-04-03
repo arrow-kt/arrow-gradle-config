@@ -46,7 +46,6 @@ not be exposed publicly):
 - Gradle properties
 
 ```properties
-signing.gnupg.keyName=[keyName]
 signing.gnupg.keyId=[keyId]
 signing.gnupg.key=[key]
 signing.gnupg.passphrase=[passphrase]
@@ -58,7 +57,6 @@ oss.stagingProfileId=[stagingProfileId]
 - Environment variables
 
 ```text
-SIGNING_KEY_NAME=[keyName]
 SIGNING_KEY_ID=[keyId]
 SIGNING_KEY=[key]
 SIGNING_KEY_PASSPHRASE=[passphrase]

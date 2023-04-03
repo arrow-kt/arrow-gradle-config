@@ -37,15 +37,6 @@ val SigningExtension.isLocal: Boolean
       it.contains("publishToMavenLocal", ignoreCase = true)
     }
 
-val SigningExtension.signingKeyName: String?
-  get() = getSigningVariable("signing.gnupg.keyName", "SIGNING_KEY_NAME")
-
-val SigningExtension.hasSigningKeyNameGradleProperty: Boolean
-  get() = project.properties["signing.gnupg.keyName"]?.toString().isNullOrBlank().not()
-
-val SigningExtension.hasSigningKeyNameEnvironmentVariable: Boolean
-  get() = System.getenv("SIGNING_KEY_NAME").isNullOrBlank().not()
-
 val SigningExtension.signingKeyId: String?
   get() = getSigningVariable("signing.gnupg.keyId", "SIGNING_KEY_ID")
 
