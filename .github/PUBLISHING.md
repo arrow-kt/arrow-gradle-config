@@ -22,10 +22,9 @@
 7. Add Nexus profileId: `oss.stagingProfileId=[stagingProfileId]`
     1. Visit this [link](https://oss.sonatype.org/#stagingProfiles), select your profile and copy
        `SOME_NUMBER` from the url `https://oss.sonatype.org/#stagingProfiles;SOME_NUMBERS`
-8. Add KeyName (optional with `useInMemoryPgpKeys`): `signing.gnupg.keyName=[keyName]`
-9. Add KeyId (optional with `useInMemoryPgpKeys` and `useCpgCmd`): `signing.gnupg.keyId=[keyId]`
-10. Add Key (replace line breaks with `\n`, optional with `useGpgCmd`): `signing.gnupg.key=[key]`
-11. Add Passphrase: `signing.gnupg.passphrase=[passphrase]`
+8. Add KeyId (optional with `useInMemoryPgpKeys` and `useCpgCmd`): `signing.gnupg.keyId=[keyId]`
+9. Add Key (replace line breaks with `\n`, optional with `useGpgCmd`): `signing.gnupg.key=[key]`
+10. Add Passphrase: `signing.gnupg.passphrase=[passphrase]`
 
 ### Using environment variables method
 
@@ -37,11 +36,10 @@
 6. Add Nexus profileId: `OSS_STAGING_PROFILE_ID`
     1. Visit this [link](https://oss.sonatype.org/#stagingProfiles), select your profile and copy
        `SOME_NUMBER` from the url `https://oss.sonatype.org/#stagingProfiles;SOME_NUMBERS`
-7. Add KeyName (optional with `useInMemoryPgpKeys`): `SIGNING_KEY_NAME=[keyName]`
-8. Add KeyId (optional with `useInMemoryPgpKeys` and `useCpgCmd`): `SIGNING_KEY_ID=[keyId]`
-9. Add Key (replace line breaks with `\n`, optional with `useGpgCmd`): `SIGNING_KEY=[key]`
+7. Add KeyId (optional with `useInMemoryPgpKeys` and `useCpgCmd`): `SIGNING_KEY_ID=[keyId]`
+8. Add Key (replace line breaks with `\n`, optional with `useGpgCmd`): `SIGNING_KEY=[key]`
     1. If it is used as secret in GitHub, it is not necessary to replace all line breaks with `\n`
-10. Add Passphrase: `SIGNING_KEY_PASSPHRASE=[passphrase]`
+9. Add Passphrase: `SIGNING_KEY_PASSPHRASE=[passphrase]`
 
 ### Minimum amount of secrets for publishing via GitHub Actions
 
@@ -59,9 +57,8 @@
 1. `OSS_USER`
 2. `OSS_TOKEN`
 3. `OSS_STAGING_PROFILE_ID`
-4. `SIGNING_KEY_NAME`
-5. `SIGNING_KEY_PASSPHRASE`
-6. `SIGNING_KEY`
+4. `SIGNING_KEY_PASSPHRASE`
+5. `SIGNING_KEY`
 
 > You can use these utilities:
 > - Kleopatra, GUI for Windows
