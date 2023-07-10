@@ -39,6 +39,7 @@ if (isKotlinMultiplatform) {
     }
 
     linuxX64()
+    linuxArm64()
 
     mingwX64()
 
@@ -61,6 +62,7 @@ if (isKotlinMultiplatform) {
       val commonMain by getting
       val mingwX64Main by getting
       val linuxX64Main by getting
+      val linuxArm64Main by getting
       val iosArm32Main by getting
       val iosArm64Main by getting
       val iosSimulatorArm64Main by getting
@@ -80,6 +82,7 @@ if (isKotlinMultiplatform) {
         dependsOn(commonMain)
         mingwX64Main.dependsOn(this)
         linuxX64Main.dependsOn(this)
+        linuxArm64Main.dependsOn(this)
         iosArm32Main.dependsOn(this)
         iosArm64Main.dependsOn(this)
         iosSimulatorArm64Main.dependsOn(this)
