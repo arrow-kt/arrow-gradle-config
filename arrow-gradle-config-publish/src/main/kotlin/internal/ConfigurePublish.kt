@@ -6,12 +6,14 @@ import com.gradle.publish.PluginBundleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 
 internal fun Project.configurePublish() {
@@ -66,6 +68,7 @@ internal fun Project.configurePublish() {
     }
 
     configure(SigningExtension::signPublications)
+    tasks.withType<AbstractPublishToMaven> { dependsOn(tasks.withType<Sign>()) }
   }
 }
 
