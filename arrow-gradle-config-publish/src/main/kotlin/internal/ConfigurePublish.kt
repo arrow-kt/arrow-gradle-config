@@ -66,6 +66,7 @@ internal fun Project.configurePublish() {
     }
 
     configure(SigningExtension::signPublications)
+    tasks.withType<AbstractPublishToMaven> { dependsOn(tasks.withType<Sign>()) }
   }
 }
 
