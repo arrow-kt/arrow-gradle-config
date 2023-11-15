@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 group = property("projects.group").toString()
 
@@ -37,6 +37,9 @@ if (isKotlinMultiplatform) {
       browser()
       nodejs()
     }
+
+    @OptIn(ExperimentalWasmDsl::class) wasmJs()
+    @OptIn(ExperimentalWasmDsl::class) wasmWasi()
 
     // Native: https://kotlinlang.org/docs/native-target-support.html
     // -- Tier 1 --
@@ -85,7 +88,7 @@ if (isKotlinMultiplatform) {
       // -- Tier 3 --
       val mingwX64Main by getting
 
-      create("nativeMain") {
+      val nativeMain = create("nativeMain") {
         dependsOn(commonMain)
         // -- Tier 1 --
         linuxX64Main.dependsOn(this)
@@ -105,6 +108,22 @@ if (isKotlinMultiplatform) {
         iosArm64Main.dependsOn(this)
         // -- Tier 3 --
         mingwX64Main.dependsOn(this)
+      }
+
+      val jsMain by getting
+
+      val wasmJsMain by getting
+      val wasmWasiMain by getting
+
+      val wasmMain = create("wasmMain") {
+        dependsOn(wasmJsMain)
+        dependsOn(wasmWasiMain)
+      }
+
+      val nonJvmMain = create("nonJvmMain") {
+        dependsOn(nativeMain)
+        dependsOn(jsMain)
+        dependsOn(wasmMain)
       }
     }
   }
