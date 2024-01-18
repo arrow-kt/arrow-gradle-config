@@ -1,7 +1,10 @@
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.withType
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 
 fun Project.signPublications() {
@@ -13,6 +16,7 @@ fun Project.signPublications() {
         useGpgCmd()
       }
       sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
+      tasks.withType<AbstractPublishToMaven> { dependsOn(tasks.withType<Sign>()) }
     }
   }
 }
