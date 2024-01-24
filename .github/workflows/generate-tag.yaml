@@ -42,7 +42,7 @@ jobs:
           java-version: 11
 
       - name: Build with Gradle
-        uses: gradle/gradle-build-action@v2.11.1
+        uses: gradle/gradle-build-action@v2.12.0
         with:
           arguments: build -x spotlessCheck "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
 
@@ -69,7 +69,7 @@ jobs:
           java-version: 11
 
       - name: Generate Tag
-        uses: gradle/gradle-build-action@v2.11.1
+        uses: gradle/gradle-build-action@v2.12.0
         with:
           arguments: createSemverTag "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
 
