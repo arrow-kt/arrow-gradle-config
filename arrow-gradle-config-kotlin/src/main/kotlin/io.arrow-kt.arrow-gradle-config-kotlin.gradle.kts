@@ -120,7 +120,7 @@ if (isKotlinMultiplatform) {
         dependsOn(wasmWasiMain)
       }
 
-      val nonJvmMain = create("nonJvmMain") {
+      create("nonJvmMain") {
         dependsOn(nativeMain)
         dependsOn(jsMain)
         dependsOn(wasmMain)
