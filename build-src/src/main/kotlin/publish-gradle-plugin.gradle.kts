@@ -4,7 +4,7 @@ plugins {
   signing
 }
 
-pluginBundle {
+gradlePlugin {
   website = property("pom.url").toString()
   vcsUrl = property("pom.smc.url").toString()
 }
