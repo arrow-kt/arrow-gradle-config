@@ -8,6 +8,7 @@ import org.gradle.api.Project
 import org.gradle.api.XmlProvider
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.configurationcache.extensions.capitalized
 import org.gradle.kotlin.dsl.getByName
 
 internal fun Project.publishPlatformArtifactsInRootModule() {
@@ -57,7 +58,7 @@ internal fun Project.publishPlatformArtifactsInRootModule() {
     tasks
       .matching { it.name == "generatePomFileForKotlinMultiplatformPublication" }
       .configureEach {
-        dependsOn("generatePomFileFor${platformPublication.name.capitalize()}Publication")
+        dependsOn("generatePomFileFor${platformPublication.name.capitalized()}Publication")
       }
   }
 }

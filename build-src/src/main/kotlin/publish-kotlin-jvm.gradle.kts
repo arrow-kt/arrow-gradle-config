@@ -21,3 +21,7 @@ project.tasks.creating(Jar::class) {
 setupPublishing(docsJar, sourcesJar, createMavenFromJava = true)
 
 signPublications()
+
+tasks.findByName(
+  "publishIo.arrow-kt.${project.name}PluginMarkerMavenPublication"
+)?.apply { dependsOn(docsJar) }
