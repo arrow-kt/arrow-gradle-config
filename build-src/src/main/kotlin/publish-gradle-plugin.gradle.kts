@@ -24,19 +24,4 @@ val sourcesJar by project.tasks.creating(Jar::class) {
 
 setupPublishing(docsJar, sourcesJar)
 
-signPublications()
-
-if (
-  project.name.contains("formatter") ||
-  project.name.contains("kotlin")
-) {
-  println(project.name)
-}
-
-tasks.findByName(
-  "publishIo.arrow-kt.${project.name}PluginMarkerMavenPublication"
-)?.apply { dependsOn(docsJar) }
-
-tasks.findByName(
-  "signIo.arrow-kt.${project.name}PluginMarkerMavenPublication"
-)?.apply { dependsOn(docsJar) }
+signPublications(docsJar)
