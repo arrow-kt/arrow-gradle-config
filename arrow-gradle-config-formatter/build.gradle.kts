@@ -7,18 +7,11 @@ gradlePlugin {
   plugins {
     named("io.arrow-kt.arrow-gradle-config-formatter") {
       id = "io.arrow-kt.arrow-gradle-config-formatter"
+      tags.set(listOf("Arrow", "formatter"))
       displayName = "Arrow formatter Gradle Config"
       description = "Basic formatter Gradle config for Arrow projects"
     }
   }
-}
-
-pluginBundle {
-  tags =
-    listOf(
-      "Arrow",
-      "formatter",
-    )
 }
 
 dependencies {

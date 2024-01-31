@@ -1,13 +1,10 @@
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.withType
-import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 
-fun Project.signPublications(createMavenFromJava: Boolean = false) {
+fun Project.signPublications() {
   configure<SigningExtension> {
     if (shouldSign) {
       try {
@@ -16,15 +13,6 @@ fun Project.signPublications(createMavenFromJava: Boolean = false) {
         useGpgCmd()
       }
       sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
-      if (!createMavenFromJava) {
-        tasks.withType<AbstractPublishToMaven> {
-          afterEvaluate { dependsOn("javadocJar") }
-          dependsOn(tasks.withType<Sign>())
-        }
-        tasks.withType<Sign> {
-          afterEvaluate { dependsOn("javadocJar") }
-        }
-      }
     }
   }
 }

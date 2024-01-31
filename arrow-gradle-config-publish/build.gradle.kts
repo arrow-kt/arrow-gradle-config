@@ -10,18 +10,11 @@ gradlePlugin {
   plugins {
     named("io.arrow-kt.arrow-gradle-config-publish") {
       id = "io.arrow-kt.arrow-gradle-config-publish"
+      tags.set(listOf("Arrow", "Arrow publish multiplatform"))
       displayName = "Arrow Kotlin publishing Gradle Config"
       description = "Basic publishing Gradle config for Kotlin Arrow projects"
     }
   }
-}
-
-pluginBundle {
-  tags =
-    listOf(
-      "Arrow",
-      "Arrow publish multiplatform",
-    )
 }
 
 dependencies {

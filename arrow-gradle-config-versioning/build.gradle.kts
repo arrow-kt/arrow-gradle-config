@@ -7,18 +7,11 @@ gradlePlugin {
   plugins {
     named("io.arrow-kt.arrow-gradle-config-versioning") {
       id = "io.arrow-kt.arrow-gradle-config-versioning"
+      tags.set(listOf("Arrow", "Arrow versioning"))
       displayName = "Arrow Versioning Gradle Config"
       description = "Basic versioning Gradle config for Arrow projects"
     }
   }
-}
-
-pluginBundle {
-  tags =
-    listOf(
-      "Arrow",
-      "Arrow versioning",
-    )
 }
 
 dependencies {
