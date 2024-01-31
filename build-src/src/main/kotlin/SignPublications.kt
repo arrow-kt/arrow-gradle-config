@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 
-fun Project.signPublications() {
+fun Project.signPublications(createMavenFromJava: Boolean = false) {
   configure<SigningExtension> {
     if (shouldSign) {
       try {
@@ -16,12 +16,14 @@ fun Project.signPublications() {
         useGpgCmd()
       }
       sign(project.extensions.getByName<PublishingExtension>("publishing").publications)
-      tasks.withType<AbstractPublishToMaven> {
-        afterEvaluate { dependsOn("javadocJar") }
-        dependsOn(tasks.withType<Sign>())
-      }
-      tasks.withType<Sign> {
-        afterEvaluate { dependsOn("javadocJar") }
+      if (!createMavenFromJava) {
+        tasks.withType<AbstractPublishToMaven> {
+          afterEvaluate { dependsOn("javadocJar") }
+          dependsOn(tasks.withType<Sign>())
+        }
+        tasks.withType<Sign> {
+          afterEvaluate { dependsOn("javadocJar") }
+        }
       }
     }
   }
