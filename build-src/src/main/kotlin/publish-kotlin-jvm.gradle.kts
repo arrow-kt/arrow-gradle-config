@@ -20,15 +20,4 @@ project.tasks.creating(Jar::class) {
 
 setupPublishing(docsJar, sourcesJar, createMavenFromJava = true)
 
-signPublications(docsJar)
-
-if (
-  project.name.contains("formatter") ||
-  project.name.contains("kotlin")
-) {
-  println(project.name)
-}
-
-tasks.findByName(
-  "publishIo.arrow-kt.${project.name}PluginMarkerMavenPublication"
-)?.apply { dependsOn(docsJar) }
+signPublications()
