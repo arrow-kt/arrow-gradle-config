@@ -3,3 +3,4 @@
 build/
 **/jsr223
 **/.DS_Store
+/arrow-gradle-config-publish/property(org.gradle.api.file.Directory, fixed(class org.gradle.api.internal.file.DefaultFilePropertyFactory$FixedDirectory, **/arrow-gradle-config/arrow-gradle-config-publish/build))/generated-sources/version/kotlin/ArrowGradleConfigVersion.kt
