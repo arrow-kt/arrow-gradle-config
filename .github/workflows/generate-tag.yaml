@@ -31,21 +31,20 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3.13.0
         with:
-          distribution: 'temurin'
-          java-version: 17
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+          distribution: 'zulu'
+          java-version: 11
 
       - name: Build with Gradle
-        run: ./gradlew build -x spotlessCheck "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
+        uses: gradle/gradle-build-action@v2.12.0
+        with:
+          arguments: build -x spotlessCheck "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
 
       - name: Stop Gradle daemons
         run: ./gradlew --stop
@@ -64,16 +63,15 @@ jobs:
           token: ${{ secrets.TOKEN_GITHUB_ACTION }}
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v3.13.0
         with:
-          distribution: 'temurin'
-          java-version: 17
+          distribution: 'zulu'
+          java-version: 11
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Generate tag
-        run: ./gradlew createSemverTag "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
+      - name: Generate Tag
+        uses: gradle/gradle-build-action@v2.12.0
+        with:
+          arguments: createSemverTag "-Psemver.scope=${{ github.event.inputs.scope }}" "-Psemver.stage=${{ github.event.inputs.stage }}"
 
       - name: Push changes to tag
         run: git push --follow-tags

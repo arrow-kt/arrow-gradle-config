@@ -6,12 +6,19 @@ plugins {
 gradlePlugin {
   plugins {
     named("io.arrow-kt.arrow-gradle-config-nexus") {
-      tags = listOf("Arrow", "Arrow Nexus")
       id = "io.arrow-kt.arrow-gradle-config-nexus"
       displayName = "Arrow Nexus Gradle Config"
       description = "Basic Nexus Gradle config for Arrow publications"
     }
   }
+}
+
+pluginBundle {
+  tags =
+    listOf(
+      "Arrow",
+      "Arrow Nexus",
+    )
 }
 
 dependencies {

@@ -266,7 +266,7 @@ class PatchedDocTagToContentConverter : DocTagToContentConverter() {
     dci: DCI,
     sourceSets: Set<DokkaConfiguration.DokkaSourceSet>,
     styles: Set<Style>,
-    extras: PropertyContainer<ContentNode>
+    extra: PropertyContainer<ContentNode>
   ): List<ContentNode> {
     fun buildChildren(
       docTag: DocTag,
@@ -279,7 +279,7 @@ class PatchedDocTagToContentConverter : DocTagToContentConverter() {
           dci,
           sourceSets,
           styles + newStyles,
-          newExtras?.let { extras + it } ?: extras
+          newExtras?.let { extra + it } ?: extra
         )
       }
 
@@ -294,7 +294,7 @@ class PatchedDocTagToContentConverter : DocTagToContentConverter() {
         )
       )
     } else {
-      super.buildContent(docTag, dci, sourceSets, styles, extras)
+      super.buildContent(docTag, dci, sourceSets, styles, extra)
     }
   }
 }
