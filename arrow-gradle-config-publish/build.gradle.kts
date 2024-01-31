@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   `kotlin-dsl`
@@ -23,20 +24,31 @@ dependencies {
   implementation(libs.gradle.publishPlugin)
 }
 
-kotlin.sourceSets["main"].kotlin.srcDirs("${layout.buildDirectory}/generated-sources/version/kotlin")
+val generatedVersionDir = file("${layout.buildDirectory.get().asFile}/generated-sources/version/kotlin")
+kotlin.sourceSets["main"].kotlin.srcDirs(generatedVersionDir)
 
-file("${layout.buildDirectory}/generated-sources/version/kotlin/ArrowGradleConfigVersion.kt").apply {
-  ensureParentDirsCreated()
-  createNewFile()
-  writeText(
-    """
-        |package io.arrow.gradle.config.publish
-        |
-        |val arrowGradleConfigVersion = "${project.version}" 
-        |
-    """.trimMargin()
-  )
+val generateVersionFile = tasks.register("generateVersionFile") {
+  doLast {
+    generatedVersionDir.resolve("ArrowGradleConfigVersion.kt").apply {
+      ensureParentDirsCreated()
+      createNewFile()
+      writeText(
+        """
+            |package io.arrow.gradle.config.publish
+            |
+            |val arrowGradleConfigVersion = "${project.version}"
+            |
+        """.trimMargin()
+      )
+    }
+  }
 }
+
+tasks.assemble.configure { dependsOn(generateVersionFile) }
+
+tasks.withType<KotlinCompile>().configureEach { dependsOn(generateVersionFile) }
+tasks.withType<JavaCompile>().configureEach { dependsOn(generateVersionFile) }
+tasks.withType<Jar>().configureEach { dependsOn(generateVersionFile) }
 
 java {
   toolchain {
