@@ -2,8 +2,13 @@
 
 package io.arrow.gradle.config.publish.internal
 
+import org.gradle.api.DefaultTask
+import org.gradle.api.Task
 import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.tasks.TaskContainer
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.getByName
+import org.gradle.kotlin.dsl.named
 import org.gradle.plugins.signing.SigningExtension
 
 fun SigningExtension.signPublications() {
