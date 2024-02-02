@@ -14,6 +14,11 @@ gradlePlugin {
   }
 }
 
+pluginBundle {
+  tags =
+    listOf("Arrow", "formatter")
+}
+
 dependencies {
   compileOnly(libs.kotlin.gradlePlugin)
   implementation(libs.spotless)

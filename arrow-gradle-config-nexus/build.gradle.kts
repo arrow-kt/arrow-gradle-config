@@ -14,6 +14,11 @@ gradlePlugin {
   }
 }
 
+pluginBundle {
+  tags =
+    listOf("Arrow", "Arrow Nexus")
+}
+
 dependencies {
   implementation(libs.gradleNexus.publishPlugin)
 }

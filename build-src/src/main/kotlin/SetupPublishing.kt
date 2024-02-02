@@ -3,11 +3,9 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.jvm.tasks.Jar
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.withType
 
-fun Project.setupPublishing(vararg jars: Jar, createMavenFromJava: Boolean = false) {
+fun Project.setupPublishing(vararg jars: Jar) {
   configure<PublishingExtension> {
     publications {
       withType<MavenPublication> {
@@ -41,8 +39,6 @@ fun Project.setupPublishing(vararg jars: Jar, createMavenFromJava: Boolean = fal
           artifact(jar)
         }
       }
-
-      if (createMavenFromJava) create<MavenPublication>("maven") { from(components["java"]) }
     }
   }
 }

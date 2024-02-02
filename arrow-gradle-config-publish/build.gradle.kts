@@ -17,6 +17,14 @@ gradlePlugin {
   }
 }
 
+pluginBundle {
+  tags =
+    listOf(
+      "Arrow",
+      "Arrow publish multiplatform",
+    )
+}
+
 dependencies {
   // compileOnly(libs.android)
   compileOnly(libs.kotlin.gradlePlugin)

@@ -14,6 +14,14 @@ gradlePlugin {
   }
 }
 
+pluginBundle {
+  tags =
+    listOf(
+      "Arrow",
+      "Arrow versioning",
+    )
+}
+
 dependencies {
   api(libs.javiersc.semver.semverGradlePlugin)
   implementation(libs.gradle.publishPlugin)
