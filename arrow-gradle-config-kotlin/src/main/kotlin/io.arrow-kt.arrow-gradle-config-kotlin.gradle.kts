@@ -27,6 +27,8 @@ configure<JavaPluginExtension> {
   }
 }
 
+val enable_wasm = (project.rootProject.properties["enable_wasm"] as? String).toBoolean()
+
 if (isKotlinMultiplatform) {
   configure<KotlinMultiplatformExtension> {
     jvm {
@@ -38,7 +40,9 @@ if (isKotlinMultiplatform) {
       nodejs()
     }
 
-    @OptIn(ExperimentalWasmDsl::class) wasmJs()
+    if (enable_wasm) {
+      @OptIn(ExperimentalWasmDsl::class) wasmJs()
+    }
 
     // Native: https://kotlinlang.org/docs/native-target-support.html
     // -- Tier 1 --
@@ -67,8 +71,12 @@ if (isKotlinMultiplatform) {
     sourceSets {
       val commonMain by getting
 
+      val nonJvmMain by creating {
+        dependsOn(commonMain)
+      }
+
       // Native
-      // -- Tier 1 -- 
+      // -- Tier 1 --
       val linuxX64Main by getting
       val macosX64Main by getting
       val macosArm64Main by getting
@@ -90,6 +98,7 @@ if (isKotlinMultiplatform) {
       val nativeMain by creating {
         dependsOn(commonMain)
       }
+      nativeMain.dependsOn(nonJvmMain)
       // -- Tier 1 --
       linuxX64Main.dependsOn(nativeMain)
       macosX64Main.dependsOn(nativeMain)
@@ -110,14 +119,12 @@ if (isKotlinMultiplatform) {
       mingwX64Main.dependsOn(nativeMain)
 
       val jsMain by getting
-      val wasmJsMain by getting
-
-      val nonJvmMain by creating {
-        dependsOn(commonMain)
-      }
-      nativeMain.dependsOn(nonJvmMain)
       jsMain.dependsOn(nonJvmMain)
-      wasmJsMain.dependsOn(nonJvmMain)
+
+      if (enable_wasm) {
+        val wasmJsMain by getting
+        wasmJsMain.dependsOn(nonJvmMain)
+      }
     }
   }
 }
