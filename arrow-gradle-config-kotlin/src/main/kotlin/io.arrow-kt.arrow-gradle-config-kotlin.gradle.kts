@@ -87,40 +87,37 @@ if (isKotlinMultiplatform) {
       // -- Tier 3 --
       val mingwX64Main by getting
 
-      val nativeMain = create("nativeMain") {
+      val nativeMain by creating {
         dependsOn(commonMain)
-        // -- Tier 1 --
-        linuxX64Main.dependsOn(this)
-        macosX64Main.dependsOn(this)
-        macosArm64Main.dependsOn(this)
-        iosSimulatorArm64Main.dependsOn(this)
-        iosX64Main.dependsOn(this)
-        // -- Tier 2 --
-        linuxArm64Main.dependsOn(this)
-        watchosSimulatorArm64Main.dependsOn(this)
-        watchosX64Main.dependsOn(this)
-        watchosArm32Main.dependsOn(this)
-        watchosArm64Main.dependsOn(this)
-        tvosSimulatorArm64Main.dependsOn(this)
-        tvosX64Main.dependsOn(this)
-        tvosArm64Main.dependsOn(this)
-        iosArm64Main.dependsOn(this)
-        // -- Tier 3 --
-        mingwX64Main.dependsOn(this)
       }
+      // -- Tier 1 --
+      linuxX64Main.dependsOn(nativeMain)
+      macosX64Main.dependsOn(nativeMain)
+      macosArm64Main.dependsOn(nativeMain)
+      iosSimulatorArm64Main.dependsOn(nativeMain)
+      iosX64Main.dependsOn(nativeMain)
+      // -- Tier 2 --
+      linuxArm64Main.dependsOn(nativeMain)
+      watchosSimulatorArm64Main.dependsOn(nativeMain)
+      watchosX64Main.dependsOn(nativeMain)
+      watchosArm32Main.dependsOn(nativeMain)
+      watchosArm64Main.dependsOn(nativeMain)
+      tvosSimulatorArm64Main.dependsOn(nativeMain)
+      tvosX64Main.dependsOn(nativeMain)
+      tvosArm64Main.dependsOn(nativeMain)
+      iosArm64Main.dependsOn(nativeMain)
+      // -- Tier 3 --
+      mingwX64Main.dependsOn(nativeMain)
 
       val jsMain by getting
-
       val wasmJsMain by getting
-      val wasmMain = create("wasmMain") {
-        dependsOn(wasmJsMain)
-      }
 
-      val nonJvmMain = create("nonJvmMain") {
-        dependsOn(nativeMain)
-        dependsOn(jsMain)
-        dependsOn(wasmMain)
+      val nonJvmMain by creating {
+        dependsOn(commonMain)
       }
+      nativeMain.dependsOn(nonJvmMain)
+      jsMain.dependsOn(nonJvmMain)
+      wasmJsMain.dependsOn(nonJvmMain)
     }
   }
 }
