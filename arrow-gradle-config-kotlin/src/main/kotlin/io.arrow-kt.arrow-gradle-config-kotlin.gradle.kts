@@ -39,7 +39,6 @@ if (isKotlinMultiplatform) {
     }
 
     @OptIn(ExperimentalWasmDsl::class) wasmJs()
-    @OptIn(ExperimentalWasmDsl::class) wasmWasi()
 
     // Native: https://kotlinlang.org/docs/native-target-support.html
     // -- Tier 1 --
