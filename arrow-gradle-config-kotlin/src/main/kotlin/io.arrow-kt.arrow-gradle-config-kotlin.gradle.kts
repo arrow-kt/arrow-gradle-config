@@ -70,60 +70,40 @@ if (isKotlinMultiplatform) {
 
     sourceSets {
       val commonMain by getting
+      val commonTest by getting
 
-      val nonJvmMain by creating {
-        dependsOn(commonMain)
-      }
+      val nonJvmMain by creating { dependsOn(commonMain) }
+      val nonJvmTest by creating { dependsOn(commonTest) }
+
+      val nativeMain by creating { dependsOn(nonJvmMain) }
+      val nativeTest by creating { dependsOn(nonJvmTest) }
 
       // Native
       // -- Tier 1 --
-      val linuxX64Main by getting
-      val macosX64Main by getting
-      val macosArm64Main by getting
-      val iosSimulatorArm64Main by getting
-      val iosX64Main by getting
+      val linuxX64Main by getting { dependsOn(nativeMain) }
+      val macosX64Main by getting { dependsOn(nativeMain) }
+      val macosArm64Main by getting { dependsOn(nativeMain) }
+      val iosSimulatorArm64Main by getting { dependsOn(nativeMain) }
+      val iosX64Main by getting { dependsOn(nativeMain) }
       // -- Tier 2 --
-      val linuxArm64Main by getting
-      val watchosSimulatorArm64Main by getting
-      val watchosX64Main by getting
-      val watchosArm32Main by getting
-      val watchosArm64Main by getting
-      val tvosSimulatorArm64Main by getting
-      val tvosX64Main by getting
-      val tvosArm64Main by getting
-      val iosArm64Main by getting
+      val linuxArm64Main by getting { dependsOn(nativeMain) }
+      val watchosSimulatorArm64Main by getting { dependsOn(nativeMain) }
+      val watchosX64Main by getting { dependsOn(nativeMain) }
+      val watchosArm32Main by getting { dependsOn(nativeMain) }
+      val watchosArm64Main by getting { dependsOn(nativeMain) }
+      val tvosSimulatorArm64Main by getting { dependsOn(nativeMain) }
+      val tvosX64Main by getting { dependsOn(nativeMain) }
+      val tvosArm64Main by getting { dependsOn(nativeMain) }
+      val iosArm64Main by getting { dependsOn(nativeMain) }
       // -- Tier 3 --
-      val mingwX64Main by getting
+      val mingwX64Main by getting { dependsOn(nativeMain) }
 
-      val nativeMain by creating {
-        dependsOn(commonMain)
-      }
-      nativeMain.dependsOn(nonJvmMain)
-      // -- Tier 1 --
-      linuxX64Main.dependsOn(nativeMain)
-      macosX64Main.dependsOn(nativeMain)
-      macosArm64Main.dependsOn(nativeMain)
-      iosSimulatorArm64Main.dependsOn(nativeMain)
-      iosX64Main.dependsOn(nativeMain)
-      // -- Tier 2 --
-      linuxArm64Main.dependsOn(nativeMain)
-      watchosSimulatorArm64Main.dependsOn(nativeMain)
-      watchosX64Main.dependsOn(nativeMain)
-      watchosArm32Main.dependsOn(nativeMain)
-      watchosArm64Main.dependsOn(nativeMain)
-      tvosSimulatorArm64Main.dependsOn(nativeMain)
-      tvosX64Main.dependsOn(nativeMain)
-      tvosArm64Main.dependsOn(nativeMain)
-      iosArm64Main.dependsOn(nativeMain)
-      // -- Tier 3 --
-      mingwX64Main.dependsOn(nativeMain)
-
-      val jsMain by getting
-      jsMain.dependsOn(nonJvmMain)
+      val jsMain by getting { dependsOn(nonJvmMain) }
+      val jsTest by getting { dependsOn(nonJvmTest) }
 
       if (enable_wasm) {
-        val wasmJsMain by getting
-        wasmJsMain.dependsOn(nonJvmMain)
+        val wasmJsMain by getting { dependsOn(nonJvmMain) }
+        val wasmJsTest by getting { dependsOn(nonJvmTest) }
       }
     }
   }
