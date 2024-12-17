@@ -1,6 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
-import org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalWasmDsl
 
 group = property("projects.group").toString()
 
@@ -27,8 +26,6 @@ configure<JavaPluginExtension> {
   }
 }
 
-val enable_wasm = (project.rootProject.properties["enable_wasm"] as? String).toBoolean()
-
 if (isKotlinMultiplatform) {
   configure<KotlinMultiplatformExtension> {
     jvm {
@@ -40,8 +37,11 @@ if (isKotlinMultiplatform) {
       nodejs()
     }
 
-    if (enable_wasm) {
-      @OptIn(ExperimentalWasmDsl::class) wasmJs()
+    @OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+    wasmJs {
+      browser()
+      nodejs()
+      d8()
     }
 
     // Native: https://kotlinlang.org/docs/native-target-support.html
@@ -68,43 +68,20 @@ if (isKotlinMultiplatform) {
     // iosArm32() // deprecated as of 1.8.20
     // watchosX86()
 
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
-      val commonMain by getting
-      val commonTest by getting
+      val nonJvmMain by creating { dependsOn(commonMain.get()) }
+      val nonJvmTest by creating { dependsOn(commonTest.get()) }
 
-      val nonJvmMain by creating { dependsOn(commonMain) }
-      val nonJvmTest by creating { dependsOn(commonTest) }
+      nativeMain.get().dependsOn(nonJvmMain)
+      nativeTest.get().dependsOn(nonJvmTest)
 
-      val nativeMain by creating { dependsOn(nonJvmMain) }
-      val nativeTest by creating { dependsOn(nonJvmTest) }
+      jsMain.get().dependsOn(nonJvmMain)
+      jsTest.get().dependsOn(nonJvmTest)
 
-      // Native
-      // -- Tier 1 --
-      val linuxX64Main by getting { dependsOn(nativeMain) }
-      val macosX64Main by getting { dependsOn(nativeMain) }
-      val macosArm64Main by getting { dependsOn(nativeMain) }
-      val iosSimulatorArm64Main by getting { dependsOn(nativeMain) }
-      val iosX64Main by getting { dependsOn(nativeMain) }
-      // -- Tier 2 --
-      val linuxArm64Main by getting { dependsOn(nativeMain) }
-      val watchosSimulatorArm64Main by getting { dependsOn(nativeMain) }
-      val watchosX64Main by getting { dependsOn(nativeMain) }
-      val watchosArm32Main by getting { dependsOn(nativeMain) }
-      val watchosArm64Main by getting { dependsOn(nativeMain) }
-      val tvosSimulatorArm64Main by getting { dependsOn(nativeMain) }
-      val tvosX64Main by getting { dependsOn(nativeMain) }
-      val tvosArm64Main by getting { dependsOn(nativeMain) }
-      val iosArm64Main by getting { dependsOn(nativeMain) }
-      // -- Tier 3 --
-      val mingwX64Main by getting { dependsOn(nativeMain) }
-
-      val jsMain by getting { dependsOn(nonJvmMain) }
-      val jsTest by getting { dependsOn(nonJvmTest) }
-
-      if (enable_wasm) {
-        val wasmJsMain by getting { dependsOn(nonJvmMain) }
-        val wasmJsTest by getting { dependsOn(nonJvmTest) }
-      }
+      wasmJsMain.get().dependsOn(nonJvmMain)
+      wasmJsTest.get().dependsOn(nonJvmTest)
     }
   }
 }
