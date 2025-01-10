@@ -6,23 +6,23 @@ import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.bundling.Jar
-import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.register
 
 internal val Project.docsJar: Jar
   get() =
-    tasks.create<Jar>("docsJar") {
+    tasks.register("docsJar", fun Jar.() {
       group = "build"
       description = "Assembles Javadoc jar file from for publishing"
       archiveClassifier.set("javadoc")
       if (dokkaEnabled) {
         tasks.findByName("dokkaHtml")?.let { dokkaHtml -> from(dokkaHtml) }
       }
-    }
+    }).get()
 
 internal val Project.sourcesJar: Jar
   get() =
-    tasks.create<Jar>("sourcesJar") {
+    tasks.register("sourcesJar", fun Jar.() {
       group = "build"
       description = "Assembles Sources jar file for publishing"
       archiveClassifier.set("sources")
@@ -48,4 +48,4 @@ internal val Project.sourcesJar: Jar
           else -> emptySet()
         }
       if (sources.toList().isNotEmpty()) from(sources)
-    }
+    }).get()

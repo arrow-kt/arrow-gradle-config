@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
+import java.time.Duration
 
 group = property("projects.group").toString()
 
@@ -82,6 +83,32 @@ if (isKotlinMultiplatform) {
 
       wasmJsMain.get().dependsOn(nonJvmMain)
       wasmJsTest.get().dependsOn(nonJvmTest)
+    }
+
+    js {
+      nodejs {
+        testTask {
+          useMocha {
+            timeout = "300s"
+          }
+        }
+      }
+      browser {
+        testTask {
+          useKarma {
+            useChromeHeadless()
+            timeout.set(Duration.ofMinutes(5))
+          }
+        }
+      }
+    }
+
+    wasmJs {
+      d8 {
+        testTask {
+          timeout.set(Duration.ofMinutes(5))
+        }
+      }
     }
   }
 }
