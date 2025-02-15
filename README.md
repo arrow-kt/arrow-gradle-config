@@ -1,3 +1,7 @@
+[![Maven Central](https://img.shields.io/maven-central/v/io.arrow-kt/arrow-gradle-config-kotlin?color=4caf50&label=latest%20release)](https://maven-badges.herokuapp.com/maven-central/io.arrow-kt/arrow-gradle-config-kotlin)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![Kotlin version](https://img.shields.io/badge/Kotlin-1.7.20-blue)](https://kotlinlang.org/docs/whatsnew1720.html)
+
 # Arrow Gradle config
 
 ## Add basic config to a Kotlin Multiplatform project
